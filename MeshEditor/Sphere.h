@@ -1,9 +1,11 @@
 #include "Command.h"
+#include "STLParser.h"
 
 class Sphere : public Command
 {
 private:
 	const std::string name = "Sphere";
+	STLParser parser;
 public:
 	const std::string& getName() const override
 	{
@@ -12,6 +14,8 @@ public:
 
 	int execute(const std::map<std::string, std::string>& args) override
 	{
+		auto a = parser.read(args.find("filename")->second);
+
 		return 0;
 	}
 };

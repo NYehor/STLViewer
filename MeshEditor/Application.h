@@ -12,7 +12,6 @@ public:
 	{
 		std::string name = command->getName();
 		dictionary.insert(std::make_pair(name, std::move(command)));
-		std::cout << "Add: "<<name << std::endl;
 	}
 
 	int execute(int argc, char* argv[])

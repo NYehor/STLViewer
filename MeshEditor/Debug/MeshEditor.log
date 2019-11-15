@@ -1,8 +1,0 @@
-﻿  MeshEditor.cpp
-  Sphere.cpp
-C:\Users\ynedb\Documents\Git\Ehor-Nedbalo\MeshEditor\STLParser.h(43,21): warning C4018: '<': signed/unsigned mismatch
-  STLParser.cpp
-C:\Users\ynedb\Documents\Git\Ehor-Nedbalo\MeshEditor\STLParser.h(43,21): warning C4018: '<': signed/unsigned mismatch
-  Generating Code...
-C:\Users\ynedb\Documents\Git\Ehor-Nedbalo\MeshEditor\STLParser.h(43,21): warning C4018: '<': signed/unsigned mismatch
-  MeshEditor.vcxproj -> C:\Users\ynedb\Documents\Git\Ehor-Nedbalo\MeshEditor\Debug\MeshEditor.exe

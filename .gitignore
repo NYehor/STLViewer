@@ -33,3 +33,6 @@
 
 #File VS2019
 .vs
+
+#Folder
+Debug/

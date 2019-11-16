@@ -14,8 +14,6 @@ public:
 
 	int execute(const std::map<std::string, std::string>& args) override
 	{
-		auto a = parser.read(args.find("filename")->second);
-		parser.write(a, "D:\\file1.stl");
 		return 0;
 	}
 };

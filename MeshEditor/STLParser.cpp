@@ -120,7 +120,6 @@
 	TriangleSoup STLParser::readASCII(const std::string& filename)
 	{
 		TriangleSoup soup = {};
-		std::vector<std::string> token;
 		std::ifstream fin(filename.c_str(), std::ios::in );
 		std::string text;
 		std::string tmp;
@@ -131,6 +130,7 @@
 		}
 		fin.close();
 
+		std::vector<std::string> token;
 		std::stringstream input_stringstream(text);
 		std::string parsed;
 		

@@ -36,3 +36,6 @@
 
 #Folder
 Debug/
+
+#STL files
+*.stl

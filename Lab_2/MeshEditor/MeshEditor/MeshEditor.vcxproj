@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{267CCD1B-B368-4C10-8B5E-22F99F480B13}</ProjectGuid>
+    <ProjectGuid>{236F5426-37ED-415C-9B8C-34020460EBB0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MeshEditor</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
@@ -72,6 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\ynedb\Documents\Git\Ehor-Nedbalo\Lab_2\MeshEditor\ThirdParty\glfw\include;C:\Users\ynedb\Documents\Git\Ehor-Nedbalo\Lab_2\MeshEditor\ThirdParty\glm;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\ynedb\Documents\Git\Ehor-Nedbalo\Lab_2\MeshEditor\ThirdParty\glfw\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -95,6 +97,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -151,7 +154,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="glad.c" />
+    <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="MeshEditor.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="glad.h" />
+    <ClInclude Include="GLWindow.h" />
+    <ClInclude Include="khrplatform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

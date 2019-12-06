@@ -70,6 +70,10 @@ enum class KeyCode : int
 	X = 88,
 	Y = 89,
 	Z = 90,
+	UP = 265,
+	DOWN = 264,
+	LEFT = 263,
+	RIGHT = 262
 };
 
 class GLWindow

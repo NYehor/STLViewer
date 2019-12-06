@@ -101,9 +101,9 @@ private:
 	GLFWwindow* handle;
 
 	KeyCallback keyCallback = nullptr;
-	CursorPosCallback cursorPosCallback = nullptr;
 	MouseCallback mouseCallback = nullptr;
 	ScrollCallback scrollCallback = nullptr;
+	CursorPosCallback cursorPosCallback = nullptr;
 
 	static void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);

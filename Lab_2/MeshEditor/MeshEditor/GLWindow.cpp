@@ -65,7 +65,7 @@ GLFWwindow* GLWindow:: getGLFWHandle() const
 
 void GLWindow::glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	GLWindow* glWindow = reinterpret_cast<GLWindow*>(window);
+	GLWindow* glWindow = static_cast<GLWindow*>(glfwGetWindowUserPointer(window));
 
 	if (glWindow->keyCallback != NULL)
 		glWindow->keyCallback(static_cast<KeyCode>(key), static_cast<Action>(action), static_cast<Modifier>(mods));
@@ -73,9 +73,9 @@ void GLWindow::glfwKeyCallback(GLFWwindow* window, int key, int scancode, int ac
 
 void  GLWindow::glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
-	GLWindow* glWindow = reinterpret_cast<GLWindow*>(window);
+	GLWindow* glWindow = static_cast<GLWindow*>(glfwGetWindowUserPointer(window));
 
-	if (glWindow->mouseCallback = NULL)
+	if (glWindow->mouseCallback != NULL)
 	{
 		double xpos;
 		double ypos;
@@ -86,7 +86,7 @@ void  GLWindow::glfwMouseButtonCallback(GLFWwindow* window, int button, int acti
 
 void  GLWindow::glfwCursorPositionCallback(GLFWwindow* window, double xpos, double ypos)
 {
-	GLWindow* glWindow = reinterpret_cast<GLWindow*>(window);
+	GLWindow* glWindow = static_cast<GLWindow*>(glfwGetWindowUserPointer(window));
 
 	if(glWindow->cursorPosCallback != NULL)
 		glWindow->cursorPosCallback(xpos, ypos);
@@ -94,7 +94,7 @@ void  GLWindow::glfwCursorPositionCallback(GLFWwindow* window, double xpos, doub
 
 void  GLWindow::glfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	GLWindow* glWindow = reinterpret_cast<GLWindow*>(window);
+	GLWindow* glWindow = static_cast<GLWindow*>(glfwGetWindowUserPointer(window));
 
 	if(glWindow->scrollCallback != NULL)
 		glWindow->scrollCallback(xoffset, yoffset);

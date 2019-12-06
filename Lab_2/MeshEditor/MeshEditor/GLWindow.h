@@ -70,6 +70,10 @@ enum class KeyCode : int
 	X = 88,
 	Y = 89,
 	Z = 90,
+	UP = 265,
+	DOWN = 264,
+	LEFT = 263,
+	RIGHT = 262
 };
 
 class GLWindow
@@ -96,10 +100,10 @@ private:
 	uint32_t height;
 	GLFWwindow* handle;
 
-	static KeyCallback keyCallback;
-	static CursorPosCallback cursorPosCallback;
-	static MouseCallback mouseCallback;
-	static ScrollCallback scrollCallback;
+	KeyCallback keyCallback = nullptr;
+	CursorPosCallback cursorPosCallback = nullptr;
+	MouseCallback mouseCallback = nullptr;
+	ScrollCallback scrollCallback = nullptr;
 
 	static void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void glfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);

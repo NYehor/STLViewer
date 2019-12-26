@@ -111,60 +111,60 @@ std::vector<Vertex> getSphere()
 
 std::vector<Vertex> getCube()
 {
-    std::vector<Vertex> vec;
-    std::vector<GLfloat> v = {
-        -0.50f, -0.50f, -0.50f, // triangle 1 : begin
-        -0.50f, -0.50f, 0.50f,
-        -0.50f, 0.50f, 0.50f, // triangle 1 : end
+	std::vector<Vertex> vec;
+	std::vector<GLfloat> v = {
+		-0.50f, -0.50f, -0.50f, // triangle 1 : begin
+		-0.50f, -0.50f, 0.50f,
+		-0.50f, 0.50f, 0.50f, // triangle 1 : end
 
-        0.50f, 0.50f, -0.50f, // triangle 2 : begin
-        -0.50f, -0.50f, -0.50f,
-        -0.50f, 0.50f, -0.50f, // triangle 2 : end
+		0.50f, 0.50f, -0.50f, // triangle 2 : begin
+		-0.50f, -0.50f, -0.50f,
+		-0.50f, 0.50f, -0.50f, // triangle 2 : end
 
-        0.50f, -0.50f, 0.50f,
-        -0.50f, -0.50f, -0.50f,
-        0.50f, -0.50f, -0.50f,
-
-        0.50f, 0.50f, -0.50f,
-        0.50f, -0.50f, -0.50f,
-        -0.50f, -0.50f, -0.50f,
-
-        -0.50f, -0.50f, -0.50f,
-        -0.50f, 0.50f, 0.50f,
-        -0.50f, 0.50f, -0.50f,
-
-        0.50f, -0.50f, 0.50f,
-        -0.50f, -0.50f, 0.50f,
-        -0.50f, -0.50f, -0.50f,
-
-        -0.50f, 0.50f, 0.50f,
-        -0.50f, -0.50f, 0.50f,
-        0.50f, -0.50f, 0.50f,
-
-        0.50f, 0.50f, 0.50f,
-        0.50f, -0.50f, -0.50f,
-        0.50f, 0.50f, -0.50f,
-
-        0.50f, 0.50f, 0.50f,
-        0.50f, -0.50f, 0.50f,
+		0.50f, -0.50f, 0.50f,
+		-0.50f, -0.50f, -0.50f,
 		0.50f, -0.50f, -0.50f,
 
-        0.50f, 0.50f, 0.50f,
-        0.50f, 0.50f, -0.50f,
-        -0.50f, 0.50f, -0.50f,
+		0.50f, 0.50f, -0.50f,
+		0.50f, -0.50f, -0.50f,
+		-0.50f, -0.50f, -0.50f,
 
-        0.50f, 0.50f, 0.50f,
-        -0.50f, 0.50f, -0.50f,
-        -0.50f, 0.50f, 0.50f,
+		-0.50f, -0.50f, -0.50f,
+		-0.50f, 0.50f, 0.50f,
+		-0.50f, 0.50f, -0.50f,
 
-        0.50f, 0.50f, 0.50f,
-        -0.50f, 0.50f, 0.50f,
-        0.50f, -0.50f, 0.50f
-    };
+		0.50f, -0.50f, 0.50f,
+		-0.50f, -0.50f, 0.50f,
+		-0.50f, -0.50f, -0.50f,
 
-    for (size_t i = 0; i < v.size(); i += 3)
-    {
-        vec.push_back({ glm::vec3(v[i], v[i + 1], v[i + 2]), glm::normalize(glm::vec3(v[i], v[i + 1], v[i + 2])), glm::vec3(1.0f, 0.0, 0) });
+		-0.50f, 0.50f, 0.50f,
+		-0.50f, -0.50f, 0.50f,
+		0.50f, -0.50f, 0.50f,
+
+		0.50f, 0.50f, 0.50f,
+		0.50f, -0.50f, -0.50f,
+		0.50f, 0.50f, -0.50f,
+
+		0.50f, 0.50f, 0.50f,
+		0.50f, -0.50f, 0.50f,
+		0.50f, -0.50f, -0.50f,
+
+		0.50f, 0.50f, 0.50f,
+		0.50f, 0.50f, -0.50f,
+		-0.50f, 0.50f, -0.50f,
+
+		0.50f, 0.50f, 0.50f,
+		-0.50f, 0.50f, -0.50f,
+		-0.50f, 0.50f, 0.50f,
+
+		0.50f, 0.50f, 0.50f,
+		-0.50f, 0.50f, 0.50f,
+		0.50f, -0.50f, 0.50f
+	};
+
+	for (size_t i = 0; i < v.size(); i += 3)
+	{
+		vec.push_back({ glm::vec3(v[i], v[i + 1], v[i + 2]), glm::normalize(glm::vec3(v[i], v[i + 1], v[i + 2])), glm::vec3(1.0f, 0.0, 0) });
 		/*if (vec.size() % 3 == 0)
 		{
 			int j = vec.size() - 1;
@@ -173,9 +173,9 @@ std::vector<Vertex> getCube()
 			vec[j - 1].normal = normal;
 			vec[vec.size() - 2].normal = normal;
 		} */
-    }
+	}
 
-    return vec;
+	return vec;
 }
 
 void renderScene(GLRenderSystem& rs)
@@ -187,14 +187,14 @@ void renderScene(GLRenderSystem& rs)
 	/*float radius = 30;
 	float camX = sin(glfwGetTime()) * radius;
 	float camZ = cos(glfwGetTime()) * radius;
-	glm::mat4 view= glm::lookAt(glm::vec3(camX, 20.f, camZ), 
+	glm::mat4 view= glm::lookAt(glm::vec3(camX, 20.f, camZ),
 		glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));*/
 
-	std::vector<Vertex> render= std::vector<Vertex>();
+	std::vector<Vertex> render = std::vector<Vertex>();
 
 	for (size_t i = 0; i < renderObject.size(); i++)
-	{	
-		render.push_back({glm::vec3(proj  * view * world * glm::vec4(renderObject[i].position, 1.0f)), renderObject[i].normal, renderObject[i].color});
+	{
+		render.push_back({ glm::vec3(proj * view * world * glm::vec4(renderObject[i].position, 1.0f)), renderObject[i].normal, renderObject[i].color });
 	}
 
 	rs.renderTriangleSoup(render);
@@ -213,7 +213,7 @@ void moveCube(GLRenderSystem& rs, glm::vec3 offset)
 void onKeyCallback(KeyCode key, Action action, Modifier mods)
 {
 	if (key == KeyCode::UP && Action::Press == action)
- 		moveCube(rs, glm::vec3{ 0, 1, 0 });
+		moveCube(rs, glm::vec3{ 0, 1, 0 });
 	if (key == KeyCode::DOWN && Action::Press == action)
 		moveCube(rs, glm::vec3{ 0, -1, 0 });
 	if (key == KeyCode::LEFT && Action::Press == action)

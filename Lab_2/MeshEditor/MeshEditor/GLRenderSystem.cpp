@@ -33,6 +33,8 @@ const glm::mat4& GLRenderSystem::getProjMatrix()
 void GLRenderSystem::init()
 {
 	glShadeModel(GL_SMOOTH);
+	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 }
@@ -74,6 +76,8 @@ void GLRenderSystem::renderLines(const std::vector<Vertex> vertices)
 
 void GLRenderSystem::setupLight(uint32_t index, glm::vec3 position, glm::vec3 Ia, glm::vec3 Id, glm::vec3 Is)
 {
+	auto IA = glm::value_ptr(Ia);
+	GLfloat* ID = glm::value_ptr(Id);
 	glLightfv(GL_LIGHT0 + index, GL_POSITION, glm::value_ptr(position));
 	glLightfv(GL_LIGHT0 + index, GL_AMBIENT, glm::value_ptr(Ia));
 	glLightfv(GL_LIGHT0 + index, GL_DIFFUSE, glm::value_ptr(Id));
@@ -83,7 +87,13 @@ void GLRenderSystem::setupLight(uint32_t index, glm::vec3 position, glm::vec3 Ia
 void GLRenderSystem::turnLight(uint32_t index, bool enable)
 {
 	if (enable)
+	{
+		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0 + index);
+	}
 	else
+	{
 		glDisable(GL_LIGHT0 + index);
+		glDisable(GL_LIGHTING);
+	}
 }

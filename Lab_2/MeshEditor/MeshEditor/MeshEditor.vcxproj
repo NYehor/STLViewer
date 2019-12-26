@@ -165,16 +165,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GLRenderSystem.cpp" />
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="MeshEditor.cpp" />
+    <ClCompile Include="STLParser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="glad.h" />
     <ClInclude Include="GLRenderSystem.h" />
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="khrplatform.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="STLParser.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MeshEditor.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

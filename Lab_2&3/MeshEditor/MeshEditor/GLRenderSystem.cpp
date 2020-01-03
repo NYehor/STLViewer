@@ -1,8 +1,17 @@
 #include "GLRenderSystem.h";
 
+GLRenderSystem::GLRenderSystem()
+{
+	worldMatrix = glm::mat4(1.0);
+	viewMatrix = glm::mat4(1.0);
+	projMatrix = glm::mat4(1.0);
+}
+
 void GLRenderSystem::setWorldMatrix(const glm::mat4& matrix)
 {
 	worldMatrix = matrix;
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(glm::value_ptr(viewMatrix * worldMatrix));
 }
 
 const glm::mat4& GLRenderSystem::getWorldMatrix() const
@@ -13,6 +22,8 @@ const glm::mat4& GLRenderSystem::getWorldMatrix() const
 void GLRenderSystem::setViewMatrix(const glm::mat4& matrix)
 {
 	viewMatrix = matrix;
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(glm::value_ptr(viewMatrix * worldMatrix));
 }
 
 const glm::mat4& GLRenderSystem::getViewMatrix() const
@@ -23,6 +34,8 @@ const glm::mat4& GLRenderSystem::getViewMatrix() const
 void GLRenderSystem::setProjMatrix(const glm::mat4& matrix)
 {
 	projMatrix = matrix;
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixf(glm::value_ptr(matrix));
 }
 
 const glm::mat4& GLRenderSystem::getProjMatrix()

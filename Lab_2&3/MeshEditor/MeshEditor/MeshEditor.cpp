@@ -180,24 +180,13 @@ std::vector<Vertex> getCube()
 
 void renderScene(GLRenderSystem& rs)
 {
-	auto proj = rs.getProjMatrix();
-	auto view = rs.getViewMatrix();
-	auto world = rs.getWorldMatrix();
-
 	/*float radius = 30;
 	float camX = sin(glfwGetTime()) * radius;
 	float camZ = cos(glfwGetTime()) * radius;
 	glm::mat4 view= glm::lookAt(glm::vec3(camX, 20.f, camZ),
 		glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));*/
 
-	std::vector<Vertex> render = std::vector<Vertex>();
-
-	for (size_t i = 0; i < renderObject.size(); i++)
-	{
-		render.push_back({ glm::vec3(proj * view * world * glm::vec4(renderObject[i].position, 1.0f)), renderObject[i].normal, renderObject[i].color });
-	}
-
-	rs.renderTriangleSoup(render);
+	rs.renderTriangleSoup(renderObject);
 	//rs.renderLines(render);
 }
 
@@ -224,8 +213,8 @@ void onKeyCallback(KeyCode key, Action action, Modifier mods)
 
 int main()
 {
-	renderObject = getCube();
-	//renderObject = getSphere();
+	//renderObject = getCube();
+	renderObject = getSphere();
 
 	//STLParser parser;
 	//renderObject = parser.read("D:\\teapot.stl");
@@ -235,7 +224,7 @@ int main()
 	window.setKeyCallback(onKeyCallback);
 
 	rs.init();
-	rs.setupLight(0, glm::vec3{ -10, 10, -10 }, glm::vec3{ 1, 0, 0 }, glm::vec3{ 1, 0, 0 }, glm::vec3{ 1,0,0 });
+	rs.setupLight(0, glm::vec3{ 10, 10, 10 }, glm::vec3{ 1, 0, 0 }, glm::vec3{ 1, 0, 0 }, glm::vec3{ 1,0,0 });
 	rs.turnLight(0, true);
 
 	glm::mat4 viewMatrix = glm::lookAt(glm::vec3{ 3,3,3}, glm::vec3{ 0, 0, 0 }, glm::vec3{ 0.0f, 1.0f,0.0f });
@@ -244,7 +233,7 @@ int main()
 	glm::mat4 projMatrix = glm::perspective(glm::radians(60.0f), 640.0f / 480.0f, 0.1f, 100.f);
 	rs.setProjMatrix(projMatrix);
 
-	glm::mat4 worldMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5));
+	glm::mat4 worldMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1,1,1));
 	worldMatrix *= glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(-1.0f, 1.0f, 0.0f));
 	worldMatrix *= glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.0f, 0.0f));
 	rs.setWorldMatrix(worldMatrix);

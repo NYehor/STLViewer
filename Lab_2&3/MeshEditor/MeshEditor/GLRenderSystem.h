@@ -17,6 +17,7 @@ struct Vertex
 class GLRenderSystem
 {
 public:
+	GLRenderSystem();
 	void init();
 	void clearDisplay(float r, float g, float b);
 	void setViewport(double x, double y, double width, double height);

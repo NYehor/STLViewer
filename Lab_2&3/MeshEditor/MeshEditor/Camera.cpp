@@ -1,13 +1,19 @@
-
 #include "Camera.h"
 
 glm::mat4 Camera::calcViewMatrix() const
 {
-	return glm::lookAt(eye, target, up);
+	return glm::lookAt(eye, forward, right);
 }
 
-glm::vec3 Camera::caclcForward() const{}
-glm::vec3 Camera::calcRight() const{}
+glm::vec3 Camera::caclcForward()
+{
+	forward = glm::normalize(eye - target);
+}
+
+glm::vec3 Camera::calcRight()
+{
+	right = glm::normalize(glm::cross(up, forward));
+}
 
 double Camera::distanceFromEyeToTarget() const
 {
@@ -56,7 +62,7 @@ void Camera:: setLeftView()
 {
 	glm::vec3 oldTarget = target;
 	setFrontView();
-	rotate(oldTarget, { 0,1,0 }, glm::pi<float>() * 0.5);
+	rotate(oldTarget, { 0,-1,0 }, glm::pi<float>() * 0.5);
 }
 
 void Camera:: setBottomView()
@@ -106,5 +112,10 @@ void Camera::rotate(glm::vec3 point, glm::vec3 axis, float angle)
 
 void Camera:: setEyeTargetUp(glm::vec3 newEye, glm::vec3 newTarget, glm::vec3 newUp)
 {
-	double d = distanceFromEyeToTarget();
+	eye = newEye;
+	target = newTarget;
+	up = newUp;
+
+	caclcForward();
+	calcRight();
 }

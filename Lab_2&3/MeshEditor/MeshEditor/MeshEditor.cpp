@@ -14,22 +14,7 @@ std::vector<Vertex> renderObject;
 
 glm::vec3 setNormal(glm::vec3 A, glm::vec3 B, glm::vec3 C)
 {
-	glm::vec3 AB = { (B.x - A.x), (B.y - A.y), (B.z - A.z) };
-	glm::vec3 AC = { (C.x - A.x), (C.y - C.y), (C.z - C.z) };
-
-	glm::vec3 normal = {
-		(AB.y * AC.z - AB.z * AC.y),
-		-(AB.x * AC.z - AB.z * AC.x),
-		(AB.x * AC.y - AB.y * AC.x)
-	};
-
-	float lenNormal = sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
-
-	normal.x =normal.x / lenNormal;
-	normal.y = normal.y / lenNormal;
-	normal.z = normal.z / lenNormal;
-
-	return normal;
+	return glm::normalize(glm::cross(C - A, B - A));
 }
 
 std::vector<Vertex> fillVec(float teta, float incPhi, float radious, int slices)

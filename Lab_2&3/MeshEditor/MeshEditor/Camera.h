@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/geometric.hpp>
 #include <glm/gtc/constants.hpp>
 
 class Camera
@@ -9,8 +10,8 @@ class Camera
 public:
 	glm::mat4 calcViewMatrix() const;
 
-	glm::vec3 caclcForward() const;
-	glm::vec3 calcRight() const;
+	glm::vec3 caclcForward();
+	glm::vec3 calcRight();
 	double distanceFromEyeToTarget() const;
 	const glm::vec3& getEye() const;
 	const glm::vec3& getTarget() const;
@@ -37,6 +38,8 @@ private:
 	glm::vec3 eye{ 0, 0, 1 };
 	glm::vec3 target;
 	glm::vec3 up{ 0, 1, 0};
+	glm::vec3 right;
+	glm::vec3 forward;
 };
 
 

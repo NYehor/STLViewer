@@ -8,6 +8,8 @@
 #include "STLParser.h"
 #include "Viewport.h";
 
+size_t width = 640;
+size_t height = 480;
 GLRenderSystem rs;
 Viewport viewport;
 
@@ -84,14 +86,53 @@ void onKeyCallback(KeyCode key, Action action, Modifier mods)
 
 }
 
+int lastMX = 0, lastMY = 0, curMX = 0, curMY = 0;
+bool arcballOn = false;
+
+glm::vec3 getArcballVector(float x, float y)
+{
+	glm::vec3 p = glm::vec3(x / (float)width * 2.f - 1, y / (float)height * 2.f - 1.f, 0.f);
+	p.y = p.y;
+
+	if (glm::length(p) >= 1.0f)
+		p = glm::normalize(p);
+	else
+		p.z = sqrt(1.0f - p.x * p.x - p.y * p.y);
+	return p;
+}
 
 void onMouseInput(ButtonCode button, Action action, Modifier modifier, double x, double y)
 {
-
+	if (ButtonCode::Button_LEFT == button && Action::Press == action)
+	{
+		arcballOn = true;
+		lastMX = curMX = x;
+		lastMY = curMY = y;
+	}
+	else
+	{
+		arcballOn = false;
+	}
 }
 
 void onMouseMove(double x, double y)
 {
+	if (arcballOn)
+	{
+		curMX = x;
+		curMY = y;
+
+		if (curMX != lastMX || curMY != lastMY)
+		{
+			auto a = getArcballVector((float) lastMX, (float) lastMY);
+			auto b = getArcballVector((float) curMX, (float) curMY);
+
+			viewport.getCamera().orbit(a, b);
+
+			lastMX = curMX;
+			lastMY = curMY;
+		}
+	}
 
 }
 
@@ -101,9 +142,9 @@ int main()
 	renderObject = parser.read("teapot.stl");
 
 	glfwInit();
-	GLWindow window("myWindow", 640, 480);
+	GLWindow window("myWindow", width, height);
 
-	viewport.setViewportSize(640, 480);
+	viewport.setViewportSize(width, height);
 	viewport.setFOV(60.f);
 	viewport.setZNear(0.01f);
 	viewport.setZFar(500.f);

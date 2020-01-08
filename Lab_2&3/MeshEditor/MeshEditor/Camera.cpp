@@ -91,14 +91,14 @@ void Camera:: setIsoView()
 void Camera:: orbit(glm::vec3 a, glm::vec3 b)
 {
 	float angle = glm::acos(glm::dot(a, b));
-	glm::vec3 axis = glm::cross(b, a);
+	glm::vec3 axis = glm::cross(a, b);
 
 	glm::mat4 T = glm::translate(glm::mat4(1.0f), eye);
 	glm::mat4 R = calcViewMatrix() * glm::inverse(T);
 	glm::mat4 worldCameraSpace = glm::inverse(R) * T;
 
 	axis = glm::vec3(worldCameraSpace * glm::vec4(axis, 1));
-	glm::mat4 orbitMatrix = glm::rotate(glm::radians(angle), axis);
+	glm::mat4 orbitMatrix = glm::rotate(glm::degrees(angle), axis);
 
 	eye = target + glm::vec3(orbitMatrix * glm::vec4((eye - target), 1.f));
 	up = glm::vec3(orbitMatrix * glm::vec4(up, 1.f));

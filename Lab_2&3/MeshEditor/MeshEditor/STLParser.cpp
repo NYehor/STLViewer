@@ -20,6 +20,7 @@ TriangleSoup STLParser::read(const std::string& filename)
 		soup = readBinary(filename);
 	}
 
+	normolizeMesh(soup);
 	return soup;
 }
 
@@ -60,7 +61,7 @@ TriangleSoup STLParser::readBinary(const std::string& filename)
 		std::cout << "error" << std::endl;
 	}
 
-	for (int i = 0; i < nTriLong; i++) {
+	for (unsigned long i = 0; i < nTriLong; i++) {
 
 		char facet[50];
 
@@ -127,12 +128,13 @@ TriangleSoup STLParser::readFacet(std::ifstream& file)
 	TriangleSoup triangle = {};
 	std::string word;
 	file >> word;
-	glm::vec3 normal;
+	glm::vec3 normal = glm::vec3(0, 0, 0);
 	if (word == "normal")
 		normal = readVec(file);
 	else
 	{
 		// throw exception
+		
 	}
 
 	file >> word;
@@ -177,4 +179,23 @@ glm::vec3 STLParser::readVec(std::ifstream& file)
 	};
 
 	return vec;
+}
+
+void STLParser::normolizeMesh(TriangleSoup &soup)
+{
+	float maxLength = 0;
+	for (size_t i = 1, ilen= soup.size(); i < ilen; i++)
+	{
+		glm::vec3 v = soup[i].position;
+		float length = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+		if (maxLength < length)
+			maxLength = length;
+	}
+
+	for (size_t i = 0, ilen = soup.size(); i < ilen; i++)
+	{
+		soup[i].position = soup[i].position / maxLength;
+		soup[i].normal = glm::normalize(soup[i].normal);
+		soup[i].color = glm::vec3(1, 0, 0);
+	}
 }

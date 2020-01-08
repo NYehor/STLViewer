@@ -54,7 +54,7 @@ void GLRenderSystem::init()
 
 void GLRenderSystem::setViewport(double x, double y, double width, double height)
 {
-	glViewport(x, y, width, height);
+	glViewport((GLint)x, (GLint)y, (GLsizei)width, (GLsizei)height);
 }
 
 void GLRenderSystem::clearDisplay(float r, float g, float b)
@@ -66,7 +66,7 @@ void GLRenderSystem::clearDisplay(float r, float g, float b)
 void GLRenderSystem::renderTriangleSoup(const std::vector<Vertex>& vertices)
 {
 	glBegin(GL_TRIANGLES);
-	for (int i = 0; i < vertices.size(); i++)
+	for (size_t i = 0; i < vertices.size(); i++)
 	{
 		glColor3f(vertices[i].color[0], vertices[i].color[1], vertices[i].color[2]);
 		glNormal3f(vertices[i].normal[0], vertices[i].normal[1], vertices[i].normal[2]);
@@ -78,7 +78,7 @@ void GLRenderSystem::renderTriangleSoup(const std::vector<Vertex>& vertices)
 void GLRenderSystem::renderLines(const std::vector<Vertex> vertices)
 {
 	glBegin(GL_LINES);
-	for (int i = 0; i < vertices.size(); i++)
+	for (size_t i = 0; i < vertices.size(); i++)
 	{
 		glColor3f(vertices[i].color[0], vertices[i].color[1], vertices[i].color[2]);
 		glNormal3f(vertices[i].normal[0], vertices[i].normal[1], vertices[i].normal[2]);

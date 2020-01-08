@@ -21,6 +21,7 @@ GLWindow::GLWindow(const std::string& title, uint32_t width, uint32_t height)
 	glfwSetMouseButtonCallback(handle, glfwMouseButtonCallback);
 	glfwSetCursorPosCallback(handle, glfwCursorPositionCallback);
 	glfwSetScrollCallback(handle, glfwScrollCallback);
+
 }
 
 GLWindow::~GLWindow() 

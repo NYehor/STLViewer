@@ -1,8 +1,9 @@
 #pragma once
+
+#include "Camera.h";
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
-#include "Camera.h";
 
 struct ray
 {
@@ -12,6 +13,7 @@ struct ray
 
 class Viewport
 {
+public:
 	Viewport();
 	glm::mat4 calcProjectionMatrix() const;
 
@@ -28,11 +30,13 @@ class Viewport
 	float getHeight();
 	bool isParallelProjection() const;
 
-	ray calcCursorRay() const;
+	ray calcCursorRay(float x, float y) const;
 
 	float calcTargetPlaneWidth() const;
 	float calcTargetPlaneHeight() const;
 	float calcAspectRatio() const;
+
+	glm::vec2 convertToTargetPlane(float cursorX, float cursorY) const;
 
 	Camera& getCamera();
 	const Camera& getCamera() const;

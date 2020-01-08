@@ -2,9 +2,9 @@
 
 Viewport::Viewport()
 {
-	 zNear = 0.01;
-	 zFar = 500;
-	 fov = 60;
+	 zNear = 0.01f;
+	 zFar = 500.f;
+	 fov = 60.f;
 	 width = 1;
 	 height = 1;
 	 parallelProjection = false;
@@ -12,7 +12,10 @@ Viewport::Viewport()
 
 glm::mat4 Viewport::calcProjectionMatrix() const
 {
-	return glm::perspective(glm::radians(fov), (float)width / height, zNear, zFar);
+	if (parallelProjection)
+		return glm::ortho(-(float)width / 2.f, (float)width / 2.f, -(float)height / 2.f, (float)height / 2.f, zNear, zFar);
+	else
+		return glm::perspective(glm::radians(fov), calcAspectRatio(), zNear, zFar);
 }
 
 void Viewport::setViewportSize(uint32_t inWidth, uint32_t inHeight)
@@ -57,12 +60,12 @@ float Viewport::getFov() const
 
 float Viewport::getWidth()
 {
-	return width;
+	return (float)width;
 }
 
 float Viewport::getHeight()
 {
-	return height;
+	return (float)height;
 }
 
 bool Viewport::isParallelProjection() const
@@ -70,24 +73,34 @@ bool Viewport::isParallelProjection() const
 	return parallelProjection;
 }
 
-ray Viewport::calcCursorRay() const
+ray Viewport::calcCursorRay(float x, float y) const
 {
+	glm::vec4 viewport(0.0f, 0.0f, width, height);
+	glm::mat4 projection = calcProjectionMatrix();
+	glm::mat4 model = glm::mat4(1.0f);
 
+	float mauseX = x / (0.5 * width) - 1;
+	float mauseY = x / (0.5 * height) - 1;
+	
+	glm::vec3 a = glm::unProject({ mauseX, -mauseY, -1 }, model, projection, viewport);
+	glm::vec3 b = glm::unProject({ mauseX, -mauseY,  1 }, model, projection, viewport);
+
+	return { a , glm::normalize(b - a) };
 }
 
 float Viewport::calcTargetPlaneWidth() const
 {
-	return calcTargetPlaneHeight()* calcAspectRatio();
+	return (float)(calcTargetPlaneHeight() * calcAspectRatio());
 }
 
 float Viewport::calcTargetPlaneHeight() const
 {
-	return 2.0 * camera.distanceFromEyeToTarget() * tan(glm::radians(fov / 2.0));
+	return 2.0f * camera.distanceFromEyeToTarget() * (float)tan(glm::radians(fov / 2.0f));
 }
 
 float Viewport::calcAspectRatio() const
 {
-	
+	return (float)width / height;
 }
 
 Camera& Viewport::getCamera()
@@ -98,4 +111,11 @@ Camera& Viewport::getCamera()
 const Camera& Viewport::getCamera() const
 {
 	return camera;
+}
+
+glm::vec2 Viewport::convertToTargetPlane(float cursorX, float cursorY) const
+{
+	ray r = calcCursorRay(cursorX, cursorY);
+	glm::vec3 tmp = camera.getEye() + r.dir * camera.distanceFromEyeToTarget();
+	return { tmp.x, tmp.y };
 }

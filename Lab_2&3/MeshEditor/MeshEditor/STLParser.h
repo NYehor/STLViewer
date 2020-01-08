@@ -18,4 +18,5 @@ private:
 	TriangleSoup readASCII(const std::string& filename);
 	glm::vec3 readVec(std::ifstream& file);
 	TriangleSoup readFacet(std::ifstream& file);
+	void normolizeMesh(TriangleSoup& soup);
 };

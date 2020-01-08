@@ -40,3 +40,4 @@ Debug/
 
 #STL files
 *.stl
+!teapot.stl

@@ -170,6 +170,7 @@
     <ClCompile Include="GLRenderSystem.cpp" />
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="MeshEditor.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="STLParser.cpp" />
     <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
@@ -179,6 +180,7 @@
     <ClInclude Include="GLRenderSystem.h" />
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="khrplatform.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="STLParser.h" />
     <ClInclude Include="Viewport.h" />

@@ -7,18 +7,15 @@
 #include "GLRenderSystem.h"
 #include "STLParser.h"
 #include "Viewport.h";
+#include "Model.h";
 
-size_t width = 640;
-size_t height = 480;
+size_t width = 740;
+size_t height = 580;
 GLRenderSystem rs;
 Viewport viewport;
 
-std::vector<Vertex> renderObject;
-
-void renderScene(GLRenderSystem& rs)
-{
-	rs.renderTriangleSoup(renderObject);
-}
+STLParser parser;
+Model model(parser.read("teapot.stl"));
 
 void moveCamera(Camera& camera, glm::vec3 offset)
 {
@@ -59,13 +56,13 @@ void onKeyCallback(KeyCode key, Action action, Modifier mods)
 	if (key == KeyCode::F1 && Action::Press == action)
 		viewport.getCamera().setFrontView();
 	if (key == KeyCode::F2 && Action::Press == action)
-		viewport.getCamera().setTopView();
-	if (key == KeyCode::F3 && Action::Press == action)
 		viewport.getCamera().setRearView();
-	if (key == KeyCode::F4 && Action::Press == action)
+	if (key == KeyCode::F3 && Action::Press == action)
 		viewport.getCamera().setRightView();
-	if (key == KeyCode::F5 && Action::Press == action)
+	if (key == KeyCode::F4 && Action::Press == action)
 		viewport.getCamera().setLeftView();
+	if (key == KeyCode::F5 && Action::Press == action)
+		viewport.getCamera().setTopView();
 	if (key == KeyCode::F6 && Action::Press == action)
 		viewport.getCamera().setBottomView();
 	if (key == KeyCode::F7 && Action::Press == action)
@@ -73,17 +70,23 @@ void onKeyCallback(KeyCode key, Action action, Modifier mods)
 
 	if (key == KeyCode::F8 && Action::Press == action)
 	{
+		if (viewport.isParallelProjection()) return;
+
 		rs.turnLight(0, false);
-		rs.setWorldMatrix(glm::scale(glm::mat4(1.f), glm::vec3(280)));
+		glm::mat4 matrix = model.getModelMatrix();
+		rs.setWorldMatrix(glm::scale(glm::mat4(1.0), glm::vec3(280)) * matrix);
 		viewport.setParallelProjection(true);
 	}
 	if (key == KeyCode::F9 && Action::Press == action)
 	{
+		if (!viewport.isParallelProjection()) return;
+
 		rs.turnLight(0, true);
-		rs.setWorldMatrix(glm::mat4(1.0f));
+		glm::mat4 matrix = glm::inverse( model.getModelMatrix() ) ;
+		glm::vec3 transletionVec = matrix[3];
+		rs.setWorldMatrix(glm::translate(glm::mat4(1.0f), -transletionVec));
 		viewport.setParallelProjection(false);
 	}
-
 }
 
 int lastMX = 0, lastMY = 0, curMX = 0, curMY = 0;
@@ -91,13 +94,14 @@ bool arcballOn = false;
 
 glm::vec3 getArcballVector(float x, float y)
 {
-	glm::vec3 p = glm::vec3(x / (float)width * 2.f - 1, y / (float)height * 2.f - 1.f, 0.f);
-	p.y = p.y;
+	glm::vec3 p = glm::vec3(x / (0.5 * (float)width) - 1.f,  y / (0.5 * (float)height) - 1.f, 0.f);
+	p.y = - p.y;
 
-	if (glm::length(p) >= 1.0f)
+	float length = p.x * p.x + p.y * p.y;
+	if (length >= 1.0f)
 		p = glm::normalize(p);
 	else
-		p.z = sqrt(1.0f - p.x * p.x - p.y * p.y);
+		p.z = sqrt(1.0f - length);
 	return p;
 }
 
@@ -138,9 +142,6 @@ void onMouseMove(double x, double y)
 
 int main()
 {
-	STLParser parser;
-	renderObject = parser.read("teapot.stl");
-
 	glfwInit();
 	GLWindow window("myWindow", width, height);
 
@@ -154,9 +155,9 @@ int main()
 	window.setCursorPosCallback(onMouseMove);
 
 	rs.init();
+	rs.setWorldMatrix(model.getModelMatrix());
 	rs.setupLight(0, glm::vec3{ 0,-5,0 }, glm::vec3{ 1, 0, 0 }, glm::vec3{ 0, 1, 0 }, glm::vec3{ 0,0,1 });
 	rs.turnLight(0, true);
-
 
 	while (!glfwWindowShouldClose(window.getGLFWHandle()))
 	{
@@ -165,7 +166,8 @@ int main()
 
 		rs.setViewMatrix(viewport.getCamera().calcViewMatrix());
 		rs.setProjMatrix(viewport.calcProjectionMatrix());
-		renderScene(rs);
+
+		rs.renderTriangleSoup(model.getVertexs());
 		glfwSwapBuffers(window.getGLFWHandle());
 		glfwWaitEvents();
 	}

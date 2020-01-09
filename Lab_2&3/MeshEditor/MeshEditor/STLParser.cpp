@@ -20,7 +20,6 @@ TriangleSoup STLParser::read(const std::string& filename)
 		soup = readBinary(filename);
 	}
 
-	normolizeMesh(soup);
 	return soup;
 }
 
@@ -179,23 +178,4 @@ glm::vec3 STLParser::readVec(std::ifstream& file)
 	};
 
 	return vec;
-}
-
-void STLParser::normolizeMesh(TriangleSoup &soup)
-{
-	float maxLength = 0;
-	for (size_t i = 1, ilen= soup.size(); i < ilen; i++)
-	{
-		glm::vec3 v = soup[i].position;
-		float length = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
-		if (maxLength < length)
-			maxLength = length;
-	}
-
-	for (size_t i = 0, ilen = soup.size(); i < ilen; i++)
-	{
-		soup[i].position = soup[i].position / maxLength;
-		soup[i].normal = glm::normalize(soup[i].normal);
-		soup[i].color = glm::vec3(1, 0, 0);
-	}
 }

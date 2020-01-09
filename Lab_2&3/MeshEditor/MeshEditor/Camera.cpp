@@ -2,7 +2,7 @@
 
 Camera::Camera()
 {
-	eye = glm::vec3(0, 0, 2);
+	eye = glm::vec3(0, 0, 1.5);
 	target = glm::vec3(0, 0, 0);
 	up = glm::vec3(0, 1, 0);
 }
@@ -95,10 +95,10 @@ void Camera:: orbit(glm::vec3 a, glm::vec3 b)
 
 	glm::mat4 T = glm::translate(glm::mat4(1.0f), eye);
 	glm::mat4 R = calcViewMatrix() * glm::inverse(T);
-	glm::mat4 worldCameraSpace = glm::inverse(R) * T;
+	glm::mat4 worldCameraSpace = glm::transpose(R) * T;
 
 	axis = glm::vec3(worldCameraSpace * glm::vec4(axis, 1));
-	glm::mat4 orbitMatrix = glm::rotate(glm::degrees(angle), axis);
+	glm::mat4 orbitMatrix = glm::rotate(angle, axis);
 
 	eye = target + glm::vec3(orbitMatrix * glm::vec4((eye - target), 1.f));
 	up = glm::vec3(orbitMatrix * glm::vec4(up, 1.f));

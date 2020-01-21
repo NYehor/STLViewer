@@ -15,7 +15,7 @@ GLRenderSystem rs;
 Viewport viewport;
 
 STLParser parser;
-Model model(parser.read("teapot.stl"));
+Model model(&rs, parser.read("teapot.stl"));
 
 void moveCamera(Camera& camera, glm::vec3 offset)
 {
@@ -39,10 +39,6 @@ void onKeyCallback(KeyCode key, Action action, Modifier mods)
 		moveCube(rs, glm::vec3{ -1, 0, 0 });
 	if (key == KeyCode::RIGHT && Action::Press == action)
 		moveCube(rs, glm::vec3{ 1, 0, 0 });
-	if (key == KeyCode::W && Action::Press == action)
-		moveCube(rs, glm::vec3{ 0, 0, 1 });
-	if (key == KeyCode::S && Action::Press == action)
-		moveCube(rs, glm::vec3{ 0, 0, -1 });
 
 	if (key == KeyCode::W && Action::Press == action)
 		moveCamera(viewport.getCamera(), glm::vec3{ 0, 1, 0 });
@@ -69,24 +65,9 @@ void onKeyCallback(KeyCode key, Action action, Modifier mods)
 		viewport.getCamera().setIsoView();
 
 	if (key == KeyCode::F8 && Action::Press == action)
-	{
-		if (viewport.isParallelProjection()) return;
-
-		rs.turnLight(0, false);
-		glm::mat4 matrix = model.getModelMatrix();
-		rs.setWorldMatrix(glm::scale(glm::mat4(1.0), glm::vec3(280)) * matrix);
 		viewport.setParallelProjection(true);
-	}
 	if (key == KeyCode::F9 && Action::Press == action)
-	{
-		if (!viewport.isParallelProjection()) return;
-
-		rs.turnLight(0, true);
-		glm::mat4 matrix = glm::inverse( model.getModelMatrix() ) ;
-		glm::vec3 transletionVec = matrix[3];
-		rs.setWorldMatrix(glm::translate(glm::mat4(1.0f), -transletionVec));
 		viewport.setParallelProjection(false);
-	}
 }
 
 int lastMX = 0, lastMY = 0, curMX = 0, curMY = 0;
@@ -156,7 +137,7 @@ int main()
 
 	rs.init();
 	rs.setWorldMatrix(model.getModelMatrix());
-	rs.setupLight(0, glm::vec3{ 0,-5,0 }, glm::vec3{ 1, 0, 0 }, glm::vec3{ 0, 1, 0 }, glm::vec3{ 0,0,1 });
+	rs.setupLight(0, glm::vec3{ 0,-5,0 }, glm::vec3{ 1,1,1 }, glm::vec3{ 1,1,1 }, glm::vec3{1,1,1 });
 	rs.turnLight(0, true);
 
 	while (!glfwWindowShouldClose(window.getGLFWHandle()))

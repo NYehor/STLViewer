@@ -171,6 +171,7 @@
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="MeshEditor.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="STLParser.cpp" />
     <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
@@ -182,11 +183,16 @@
     <ClInclude Include="khrplatform.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="STLParser.h" />
     <ClInclude Include="Viewport.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MeshEditor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragment.shader" />
+    <None Include="vertex.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

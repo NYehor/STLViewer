@@ -13,7 +13,11 @@ Viewport::Viewport()
 glm::mat4 Viewport::calcProjectionMatrix() const
 {
 	if (parallelProjection)
-		return glm::ortho(-(float)width / 2.f, (float)width / 2.f, -(float)height / 2.f, (float)height / 2.f, zNear, zFar);
+	{
+		float halfWidth = calcTargetPlaneWidth() / 2.f;
+		float halfHeight = calcTargetPlaneHeight() / 2.f;
+		return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, zNear, zFar);
+	}
 	else
 		return glm::perspective(glm::radians(fov), calcAspectRatio(), zNear, zFar);
 }
@@ -77,7 +81,7 @@ ray Viewport::calcCursorRay(float x, float y) const
 {
 	glm::vec4 viewport(0.0f, 0.0f, width, height);
 	glm::mat4 projection = calcProjectionMatrix();
-	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 model = camera.calcViewMatrix() * glm::mat4(1.0f);
 
 	float mauseX = x / (0.5 * width) - 1;
 	float mauseY = y / (0.5 * height) - 1;

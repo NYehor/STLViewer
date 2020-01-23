@@ -1,10 +1,38 @@
 #include "STLParser.h"
-#include "STLParser.h"
 #include <sstream>
 
-TriangleSoup STLParser::read(const std::string& filename)
+std::string STLParser::getName(const std::string& filename)
 {
-	TriangleSoup soup = {};
+	std::string name;
+	std::string line;
+	std::ifstream fin(filename.c_str(), std::ios::in | std::ios::binary);
+
+	if (fin.is_open()) {
+		getline(fin, line);
+	}
+	
+	fin.seekg(0, std::ios::beg);
+	if (line.find("solid") != std::string::npos) 
+	{
+
+		std::string word;
+		fin >> word;
+		fin >> name; // read name file
+	}
+	else 
+	{
+		char headerInfo[80] = "";
+		fin.read(headerInfo, 80);
+		name = headerInfo;		
+	}
+	fin.close();
+
+	return name;
+}
+
+std::vector<Vertex> STLParser::read(const std::string& filename)
+{
+	std::vector<Vertex> soup = {};
 	std::string line;
 	std::ifstream fin(filename.c_str(), std::ios::in | std::ios::binary);
 
@@ -34,19 +62,21 @@ glm::vec3 STLParser::convertToVec(char* facet)
 	return vector;
 };
 
-TriangleSoup STLParser::readBinary(const std::string& filename)
+std::vector<Vertex> STLParser::readBinary(const std::string& filename)
 {
-	TriangleSoup soup = {};
+	std::vector<Vertex> soup = {};
 	std::ifstream fin(filename.c_str(), std::ios::binary);
 
-	char headerInfo[80] = "";
+	std::string str;
 	char nTri[4];
 	unsigned long nTriLong = 0;
 
 	if (fin.is_open())
 
 		if (fin) {
+			char headerInfo[80] = "";
 			fin.read(headerInfo, 80);
+			str = headerInfo;
 		}
 		else {
 			std::cout << "error" << std::endl;
@@ -81,9 +111,9 @@ TriangleSoup STLParser::readBinary(const std::string& filename)
 	return soup;
 }
 
-TriangleSoup STLParser::readASCII(const std::string& filename)
+std::vector<Vertex> STLParser::readASCII(const std::string& filename)
 {
-	TriangleSoup soup = {};
+	std::vector<Vertex> soup = {};
 
 	std::ifstream file(filename, std::ios::in);
 	std::string word;
@@ -104,7 +134,7 @@ TriangleSoup STLParser::readASCII(const std::string& filename)
 			file >> word;
 			if (word == "facet")
 			{
-				TriangleSoup s = readFacet(file);
+				std::vector<Vertex> s = readFacet(file);
 				soup.insert(soup.end(), s.begin(), s.end());
 			}
 
@@ -122,12 +152,13 @@ TriangleSoup STLParser::readASCII(const std::string& filename)
 	return soup;
 }
 
-TriangleSoup STLParser::readFacet(std::ifstream& file)
+std::vector<Vertex> STLParser::readFacet(std::ifstream& file)
 {
-	TriangleSoup triangle = {};
+	std::vector<Vertex> triangle = {};
 	std::string word;
 	file >> word;
 	glm::vec3 normal = glm::vec3(0, 0, 0);
+
 	if (word == "normal")
 		normal = readVec(file);
 	else
@@ -170,6 +201,7 @@ glm::vec3 STLParser::readVec(std::ifstream& file)
 	file >> x;
 	file >> y;
 	file >> z;
+
 	glm::vec3 vec =
 	{
 		std::stof(x),

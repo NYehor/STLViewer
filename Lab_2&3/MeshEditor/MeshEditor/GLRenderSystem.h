@@ -6,28 +6,39 @@
 #include <glfw/glfw3.h>
 #include <vector>
 #include <glm/gtc/type_ptr.hpp>
+#include "Shader.h"
 
 struct Vertex
 {
 	glm::vec3 position;
 	glm::vec3 normal;
-	glm::vec3 color;
+};
+
+struct Light {
+	bool isTurn;
+
+	glm::vec3 position;
+
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
 };
 
 class GLRenderSystem
 {
 public:
-	GLRenderSystem();
+	GLRenderSystem(const char* vertexFilePath, const char* fragmentFilePath);
 	void init();
 	void clearDisplay(float r, float g, float b);
 	void setViewport(double x, double y, double width, double height);
-	void renderTriangleSoup(const std::vector<Vertex>& vertices);
-	void renderLines(const std::vector<Vertex> vertices);
+	void renderObject(unsigned int VAO, const glm::mat4& worldMatrix, const glm::vec3& color, const std::vector<Vertex>& vertexs);
+	unsigned int setVBO(const std::vector<Vertex>& vertices);
+	unsigned int setVAO(unsigned int vbo, const std::vector<Vertex>& vertices);
+	Shader& getShader();
+	const Shader& getShader() const;
+
 	void setupLight(uint32_t index, glm::vec3 position, glm::vec3 Ia, glm::vec3 Id, glm::vec3 Is);
 	void turnLight(uint32_t index, bool enable);
-
-	void setWorldMatrix(const glm::mat4& matrix);
-	const glm::mat4& getWorldMatrix() const;
 
 	void setViewMatrix(const glm::mat4& matrix);
 	const glm::mat4& getViewMatrix() const;
@@ -36,7 +47,8 @@ public:
 	const glm::mat4& getProjMatrix();
 
 private:
+	std::vector<Light> lights;
 	glm::mat4 viewMatrix;
-	glm::mat4 worldMatrix;
 	glm::mat4 projMatrix;
+	Shader shader;
 };

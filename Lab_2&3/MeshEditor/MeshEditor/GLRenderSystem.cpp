@@ -1,29 +1,17 @@
 #include "GLRenderSystem.h";
+#include <string>
+#include "Model.h"
 
-GLRenderSystem::GLRenderSystem()
+GLRenderSystem::GLRenderSystem(const char* vertexFilePath, const char* fragmentFilePath):
+	shader(vertexFilePath, fragmentFilePath)
 {
-	worldMatrix = glm::mat4(1.0);
 	viewMatrix = glm::mat4(1.0);
 	projMatrix = glm::mat4(1.0);
-}
-
-void GLRenderSystem::setWorldMatrix(const glm::mat4& matrix)
-{
-	worldMatrix = matrix;
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(glm::value_ptr(viewMatrix * worldMatrix));
-}
-
-const glm::mat4& GLRenderSystem::getWorldMatrix() const
-{
-	return worldMatrix;
 }
 
 void GLRenderSystem::setViewMatrix(const glm::mat4& matrix)
 {
 	viewMatrix = matrix;
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(glm::value_ptr(viewMatrix * worldMatrix));
 }
 
 const glm::mat4& GLRenderSystem::getViewMatrix() const
@@ -34,13 +22,21 @@ const glm::mat4& GLRenderSystem::getViewMatrix() const
 void GLRenderSystem::setProjMatrix(const glm::mat4& matrix)
 {
 	projMatrix = matrix;
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(glm::value_ptr(matrix));
 }
 
 const glm::mat4& GLRenderSystem::getProjMatrix()
 {
 	return projMatrix;
+}
+
+Shader& GLRenderSystem::getShader()
+{
+	return shader;
+}
+
+const Shader& GLRenderSystem::getShader() const
+{
+	return shader;
 }
 
 void GLRenderSystem::init()
@@ -63,48 +59,65 @@ void GLRenderSystem::clearDisplay(float r, float g, float b)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void GLRenderSystem::renderTriangleSoup(const std::vector<Vertex>& vertices)
+void GLRenderSystem::renderObject(unsigned int VAO, const glm::mat4& worldMatrix, const glm::vec3& color, const std::vector<Vertex>& vertexs)
 {
-	glBegin(GL_TRIANGLES);
-	for (size_t i = 0; i < vertices.size(); i++)
+	GLuint worldLoc = glGetUniformLocation(shader.getId(), "world");
+	glUniformMatrix4fv(worldLoc, 1, GL_FALSE, glm::value_ptr(worldMatrix));
+
+	GLuint viewdLoc = glGetUniformLocation(shader.getId(), "view");
+	glUniformMatrix4fv(viewdLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+
+	GLuint projLoc = glGetUniformLocation(shader.getId(), "proj");
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projMatrix));
+
+	shader.setVec3("color", color.x, color.y, color.z);
+	shader.setInt("numLights", (int)lights.size());
+	for (size_t i = 0, iLen = lights.size(); i < iLen; i++)
 	{
-		glColor3f(vertices[i].color[0], vertices[i].color[1], vertices[i].color[2]);
-		glNormal3f(vertices[i].normal[0], vertices[i].normal[1], vertices[i].normal[2]);
-		glVertex3f(vertices[i].position[0], vertices[i].position[1], vertices[i].position[2]);
+		std::string number = std::to_string(i);
+		shader.setFloat(("lights[" + number + "].isTurn").c_str(), lights[i].isTurn);
+		shader.setVec3(("lights[" + number + "].position").c_str(), lights[i].position.x, lights[i].position.y, lights[i].position.z);
+		shader.setVec3(("lights[" + number + "].ambient").c_str(), lights[i].ambient.x, lights[i].ambient.y, lights[i].ambient.z);
+		shader.setVec3(("lights[" + number + "].diffuse").c_str(), lights[i].diffuse.x, lights[i].diffuse.y, lights[i].diffuse.z);
+		shader.setVec3(("lights[" + number + "].specular").c_str(), lights[i].specular.x, lights[i].specular.y, lights[i].specular.z);
 	}
-	glEnd();
+
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, vertexs.size());
 }
 
-void GLRenderSystem::renderLines(const std::vector<Vertex> vertices)
+unsigned int GLRenderSystem::setVBO(const std::vector<Vertex>& vertices)
 {
-	glBegin(GL_LINES);
-	for (size_t i = 0; i < vertices.size(); i++)
-	{
-		glColor3f(vertices[i].color[0], vertices[i].color[1], vertices[i].color[2]);
-		glNormal3f(vertices[i].normal[0], vertices[i].normal[1], vertices[i].normal[2]);
-		glVertex3f(vertices[i].position[0], vertices[i].position[1], vertices[i].position[2]);
-	}
-	glEnd();
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), &vertices.front(), GL_STATIC_DRAW);
+
+	return VBO;
+}
+
+unsigned int GLRenderSystem::setVAO(unsigned int vbo, const std::vector<Vertex>& vertices)
+{
+	unsigned int VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)(offsetof(Vertex, position)));
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)(offsetof(Vertex, normal)));
+
+	return VAO;
 }
 
 void GLRenderSystem::setupLight(uint32_t index, glm::vec3 position, glm::vec3 Ia, glm::vec3 Id, glm::vec3 Is)
 {
-	glLightfv(GL_LIGHT0 + index, GL_POSITION, glm::value_ptr(position));
-	glLightfv(GL_LIGHT0 + index, GL_AMBIENT, glm::value_ptr(Ia));
-	glLightfv(GL_LIGHT0 + index, GL_DIFFUSE, glm::value_ptr(Id));
-	glLightfv(GL_LIGHT0 + index, GL_SPECULAR, glm::value_ptr(Is));
+	lights.push_back({false, position, Ia, Id, Is});
 }
 
 void GLRenderSystem::turnLight(uint32_t index, bool enable)
 {
-	if (enable)
-	{
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0 + index);
-	}
-	else
-	{
-		glDisable(GL_LIGHT0 + index);
-		glDisable(GL_LIGHTING);
-	}
+	lights[0].isTurn = enable;
 }

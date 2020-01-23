@@ -8,14 +8,19 @@
 #include "STLParser.h"
 #include "Viewport.h";
 #include "Model.h";
+#include "Scene.h"
 
 size_t width = 740;
 size_t height = 580;
-GLRenderSystem rs;
+
 Viewport viewport;
 
-STLParser parser;
-Model model(&rs, parser.read("teapot.stl"));
+GLRenderSystem& getRS()
+{
+	static GLRenderSystem rs("VertexShader.glsl", "FragmentShader.glsl");
+	return rs;
+}
+
 
 void moveCamera(Camera& camera, glm::vec3 offset)
 {
@@ -24,21 +29,19 @@ void moveCamera(Camera& camera, glm::vec3 offset)
 
 void moveCube(GLRenderSystem& rs, glm::vec3 offset)
 {
-	auto model = rs.getWorldMatrix();
-	model = glm::translate(model, offset * 0.5f);
-	rs.setWorldMatrix(model);
+
 }
 
 void onKeyCallback(KeyCode key, Action action, Modifier mods)
 {
 	if (key == KeyCode::UP && Action::Press == action)
-		moveCube(rs, glm::vec3{ 0, 1, 0 });
+		moveCube(getRS(), glm::vec3{ 0, 1, 0 });
 	if (key == KeyCode::DOWN && Action::Press == action)
-		moveCube(rs, glm::vec3{ 0, -1, 0 });
+		moveCube(getRS(), glm::vec3{ 0, -1, 0 });
 	if (key == KeyCode::LEFT && Action::Press == action)
-		moveCube(rs, glm::vec3{ -1, 0, 0 });
+		moveCube(getRS(), glm::vec3{ -1, 0, 0 });
 	if (key == KeyCode::RIGHT && Action::Press == action)
-		moveCube(rs, glm::vec3{ 1, 0, 0 });
+		moveCube(getRS(), glm::vec3{ 1, 0, 0 });
 
 	if (key == KeyCode::W && Action::Press == action)
 		moveCamera(viewport.getCamera(), glm::vec3{ 0, 1, 0 });
@@ -124,6 +127,10 @@ void onMouseMove(double x, double y)
 int main()
 {
 	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 	GLWindow window("myWindow", width, height);
 
 	viewport.setViewportSize(width, height);
@@ -135,20 +142,22 @@ int main()
 	window.setMouseCallback(onMouseInput);
 	window.setCursorPosCallback(onMouseMove);
 
-	rs.init();
-	rs.setWorldMatrix(model.getModelMatrix());
-	rs.setupLight(0, glm::vec3{ 0,-5,0 }, glm::vec3{ 1,1,1 }, glm::vec3{ 1,1,1 }, glm::vec3{1,1,1 });
-	rs.turnLight(0, true);
+	getRS().init();
+	getRS().setupLight(0, glm::vec3{ -5,0,0 }, glm::vec3{ 0.5,  0.5, 0.5 }, glm::vec3{ 0.6,0.6,0.6 }, glm::vec3{ 0.5, 0.5,0.5 });
+	getRS().turnLight(0, true);
 
+	Scene scene(getRS());
+	scene.addModel("teapot.stl");
+	
 	while (!glfwWindowShouldClose(window.getGLFWHandle()))
 	{
-		rs.setViewport(0, 0, window.getWidth(), window.getHeight());
-		rs.clearDisplay(0.5f, 0.5f, 0.5f);
+		getRS().setViewport(0, 0, window.getWidth(), window.getHeight());
+		getRS().clearDisplay(0, 0, 0);
 
-		rs.setViewMatrix(viewport.getCamera().calcViewMatrix());
-		rs.setProjMatrix(viewport.calcProjectionMatrix());
-
-		rs.renderTriangleSoup(model.getVertexs());
+		getRS().setViewMatrix(viewport.getCamera().calcViewMatrix());
+		getRS().setProjMatrix(viewport.calcProjectionMatrix());
+		getRS().getShader().use();
+		scene.draw();
 		glfwSwapBuffers(window.getGLFWHandle());
 		glfwWaitEvents();
 	}

@@ -1,11 +1,16 @@
 #include "Shader.h"
 #include "glad.h"
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
-
-Shader::Shader(const char* vertexShaderCode, const char* fragmentShaderCode)
+Shader::Shader(const char* vertexFilePath, const char* fragmentFilePath)
 {
-	shaderProgramId = compileShaders(vertexShaderCode, fragmentShaderCode);
+	shaderProgramId = compileShaders(vertexFilePath, fragmentFilePath);
 }
+
+unsigned int Shader::getId() { return shaderProgramId;  };
 
 void Shader::use()
 {
@@ -19,16 +24,47 @@ void Shader::setBool(const std::string& name, bool value) const
 
 void Shader::setInt(const std::string& name, int value) const
 {
-	glUniform1i(glGetUniformLocation(shaderProgramId, name.c_str()), (int)value);
+	glUniform1i(glGetUniformLocation(shaderProgramId, name.c_str()), value);
 }
 
 void Shader::setFloat(const std::string& name, float value) const
 {
-	glUniform1i(glGetUniformLocation(shaderProgramId, name.c_str()), (int)value);
+	glUniform1f(glGetUniformLocation(shaderProgramId, name.c_str()), value);
 }
 
-unsigned int Shader::compileShaders(const char* vertexShaderCode, const char* fragmentShaderCode)
+void Shader::setVec3(const std::string& name, float x, float y, float z) const
 {
+	glUniform3f(glGetUniformLocation(shaderProgramId, name.c_str()), x, y, z);
+}
+
+unsigned int Shader::compileShaders(const char* vertexFilePath, const char* fragmentFilePath)
+{
+	const char* vertexShaderCode;
+	const char* fragmentShaderCode;
+
+	std::string strVertexShaderCode;
+	std::ifstream vertexShaderStream(vertexFilePath, std::ios::in);
+	if (vertexShaderStream.is_open())
+	{
+		std::stringstream sstr;
+		sstr << vertexShaderStream.rdbuf();
+		strVertexShaderCode = sstr.str();
+		vertexShaderStream.close();
+	}
+
+	std::string strFragmentShaderCode;
+	std::ifstream fragmentShaderStream(fragmentFilePath, std::ios::in);
+	if (fragmentShaderStream.is_open())
+	{
+		std::stringstream sstr;
+		sstr << fragmentShaderStream.rdbuf();
+		strFragmentShaderCode = sstr.str();
+		fragmentShaderStream.close();
+	}
+
+	vertexShaderCode = strVertexShaderCode.c_str();
+	fragmentShaderCode = strFragmentShaderCode.c_str();
+
 	unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex, 1, &vertexShaderCode, NULL);
 	glCompileShader(vertex);

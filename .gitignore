@@ -41,3 +41,4 @@ Debug/
 #STL files
 *.stl
 !teapot.stl
+!sphericon.stl

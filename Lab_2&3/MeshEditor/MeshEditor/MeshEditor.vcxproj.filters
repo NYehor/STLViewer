@@ -45,6 +45,12 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Octree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLWindow.h">
@@ -77,6 +83,12 @@
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Octree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MeshEditor.rc">
@@ -84,10 +96,10 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.shader">
+    <None Include="VertexShader.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="vertex.shader">
+    <None Include="FragmentShader.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -81,15 +81,15 @@ ray Viewport::calcCursorRay(float x, float y) const
 {
 	glm::vec4 viewport(0.0f, 0.0f, width, height);
 	glm::mat4 projection = calcProjectionMatrix();
-	glm::mat4 model = camera.calcViewMatrix() * glm::mat4(1.0f);
+	glm::mat4 model = camera.calcViewMatrix();
 
-	float mauseX = x / (0.5 * width) - 1;
-	float mauseY = y / (0.5 * height) - 1;
+	float mouseX = x / (0.5 * width) - 1;
+	float mouseY = y / (0.5 * height) - 1;
 	
-	glm::vec3 a = glm::unProject({ mauseX, mauseY, -1.f }, model, projection, viewport);
-	glm::vec3 b = glm::unProject({ mauseX, mauseY,  1.f }, model, projection, viewport);
+	glm::vec3 a = glm::unProject({ mouseX, -mouseY, -1.f }, model, projection, viewport);
+	glm::vec3 b = glm::unProject({ mouseX, -mouseY,  1.f }, model, projection, viewport);
 
-	return { a , glm::normalize(b - a) };
+	return ray(a , glm::normalize(b - a));
 }
 
 float Viewport::calcTargetPlaneWidth() const

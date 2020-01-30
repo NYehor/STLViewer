@@ -9,9 +9,10 @@
 #include "Viewport.h";
 #include "Model.h";
 #include "Scene.h"
+#include "Octree.h"
 
-size_t width = 740;
-size_t height = 580;
+size_t width = 840;
+size_t height = 680;
 
 Viewport viewport;
 
@@ -101,6 +102,7 @@ void onMouseInput(ButtonCode button, Action action, Modifier modifier, double x,
 	{
 		arcballOn = false;
 	}
+	auto r = viewport.calcCursorRay(lastMX, lastMY);
 }
 
 void onMouseMove(double x, double y)
@@ -148,6 +150,7 @@ int main()
 
 	Scene scene(getRS());
 	scene.addModel("teapot.stl");
+
 	
 	while (!glfwWindowShouldClose(window.getGLFWHandle()))
 	{

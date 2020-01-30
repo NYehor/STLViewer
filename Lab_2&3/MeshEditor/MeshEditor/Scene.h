@@ -4,12 +4,6 @@
 #include "Model.h"
 #include <string>
 
-struct DataModelReference
-{
-	unsigned int VBO;
-	unsigned int VAO;
-};
-
 class Scene
 {
 public:
@@ -23,6 +17,9 @@ public:
 private:
 	GLRenderSystem& renderSystem;
 	std::vector<Model> models;
-	std::map<std::string, DataModelReference> dataModelReferences;
+	std::map<std::string, std::shared_ptr<ModelBuffer>> dataModelReferences;
+
+	void normolizeModel(std::vector<Vertex>& vertexs);
+	void translateToCenterOfMass(std::vector<Vertex>& vertexs);
 };
 

@@ -31,12 +31,12 @@ public:
 	void init();
 	void clearDisplay(float r, float g, float b);
 	void setViewport(double x, double y, double width, double height);
-	void renderObject(unsigned int VAO, const glm::mat4& worldMatrix, const glm::vec3& color, const std::vector<Vertex>& vertexs);
+	void setupShader(const glm::mat4& worldMatrix, const glm::vec3& color);
+	void renderTriangles(unsigned int VAO, const std::vector<Vertex>& vertexs);
+	void renderLines(unsigned int VAO, const std::vector<Vertex>& vertexs);
 	unsigned int setVBO(const std::vector<Vertex>& vertices);
 	unsigned int setVAO(unsigned int vbo, const std::vector<Vertex>& vertices);
-	Shader& getShader();
-	const Shader& getShader() const;
-
+	void deleteBuffers(const unsigned int& vbo, const unsigned int& vao);
 	void setupLight(uint32_t index, glm::vec3 position, glm::vec3 Ia, glm::vec3 Id, glm::vec3 Is);
 	void turnLight(uint32_t index, bool enable);
 
@@ -45,6 +45,9 @@ public:
 
 	void setProjMatrix(const glm::mat4& matrix);
 	const glm::mat4& getProjMatrix();
+
+	Shader& getShader();
+	const Shader& getShader() const;
 
 private:
 	std::vector<Light> lights;

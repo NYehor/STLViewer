@@ -1,34 +1,32 @@
 #pragma once
+
 #include "glad.h"
 #include "GLRenderSystem.h"
+#include "ModelBuffer.h"
+#include "Octree.h"
 
 class Model
 {
 public:
-	Model(GLRenderSystem& rs, const std::vector<Vertex>& vertexs);
+	Model(GLRenderSystem& rs, const std::shared_ptr<ModelBuffer> buffer);
 
 	void setModelMatrix(glm::mat4 matrix);
-	void setVBO(unsigned int vbo);
-	void setVAO(unsigned int vao);
 	void setColor(glm::vec3 color);
 
-	std::vector<Vertex> getVertexs() const;
 	glm::mat4 getModelMatrix() const;
-	unsigned int getVBO() const;
-	unsigned int getVAO() const;
 	glm::vec3 getColor() const;
 
 	void draw();
-private:
-	unsigned int VBO;
-	unsigned int VAO;
 
+	Octree& getOctree();
+	const Octree& getOctree() const;
+
+private:
+	std::shared_ptr<ModelBuffer> modelBuffer;
 	GLRenderSystem& renderSystem;
-	std::vector<Vertex> modelVertexs;
+	Octree octree;
+
 	glm::mat4 modelMatrix;
 	glm::vec3 color;
-
-	void normolizeModel(std::vector<Vertex>& vertexs);
-	void translateToCenterOfMass(std::vector<Vertex>& vertexs);
 };
 

@@ -59,7 +59,7 @@ void GLRenderSystem::clearDisplay(float r, float g, float b)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void GLRenderSystem::renderObject(unsigned int VAO, const glm::mat4& worldMatrix, const glm::vec3& color, const std::vector<Vertex>& vertexs)
+void GLRenderSystem::setupShader(const glm::mat4& worldMatrix, const glm::vec3& color)
 {
 	GLuint worldLoc = glGetUniformLocation(shader.getId(), "world");
 	glUniformMatrix4fv(worldLoc, 1, GL_FALSE, glm::value_ptr(worldMatrix));
@@ -81,9 +81,18 @@ void GLRenderSystem::renderObject(unsigned int VAO, const glm::mat4& worldMatrix
 		shader.setVec3(("lights[" + number + "].diffuse").c_str(), lights[i].diffuse.x, lights[i].diffuse.y, lights[i].diffuse.z);
 		shader.setVec3(("lights[" + number + "].specular").c_str(), lights[i].specular.x, lights[i].specular.y, lights[i].specular.z);
 	}
+}
 
+void GLRenderSystem::renderTriangles(unsigned int VAO, const std::vector<Vertex>& vertexs)
+{
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, vertexs.size());
+}
+
+void GLRenderSystem::renderLines(unsigned int VAO, const std::vector<Vertex>& vertexs)
+{
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_LINES, 0, vertexs.size());
 }
 
 unsigned int GLRenderSystem::setVBO(const std::vector<Vertex>& vertices)
@@ -110,6 +119,12 @@ unsigned int GLRenderSystem::setVAO(unsigned int vbo, const std::vector<Vertex>&
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)(offsetof(Vertex, normal)));
 
 	return VAO;
+}
+
+void GLRenderSystem::deleteBuffers(const unsigned int& vbo, const unsigned int& vao)
+{
+	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, &vbo);
 }
 
 void GLRenderSystem::setupLight(uint32_t index, glm::vec3 position, glm::vec3 Ia, glm::vec3 Id, glm::vec3 Is)

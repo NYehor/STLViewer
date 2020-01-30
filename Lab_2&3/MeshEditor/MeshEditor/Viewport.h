@@ -8,7 +8,10 @@
 struct ray
 {
 	glm::vec3 orig;
-	glm::vec3 dir{ 0,0,1};
+	glm::vec3 dir;
+
+	ray(const glm::vec3& orig, const glm::vec3& dir) :
+		orig(orig), dir(dir) {}
 };
 
 class Viewport

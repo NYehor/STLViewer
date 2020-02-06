@@ -82,12 +82,9 @@ ray Viewport::calcCursorRay(float x, float y) const
 	glm::vec4 viewport(0.0f, 0.0f, width, height);
 	glm::mat4 projection = calcProjectionMatrix();
 	glm::mat4 model = camera.calcViewMatrix();
-
-	float mouseX = x / (0.5 * width) - 1;
-	float mouseY = y / (0.5 * height) - 1;
 	
-	glm::vec3 a = glm::unProject({ mouseX, -mouseY, -1.f }, model, projection, viewport);
-	glm::vec3 b = glm::unProject({ mouseX, -mouseY,  1.f }, model, projection, viewport);
+	glm::vec3 a = glm::unProject({ x, height - y, 0.f }, model, projection, viewport);
+	glm::vec3 b = glm::unProject({ x, height - y, 1.f }, model, projection, viewport);
 
 	return ray(a , glm::normalize(b - a));
 }
@@ -115,12 +112,4 @@ Camera& Viewport::getCamera()
 const Camera& Viewport::getCamera() const
 {
 	return camera;
-}
-
-glm::vec2 Viewport::convertToTargetPlane(float cursorX, float cursorY) const
-{
-	ray r = calcCursorRay(cursorX, cursorY);
-	glm::vec3 tmp = r.dir * camera.distanceFromEyeToTarget();
-
-	return { tmp.x, tmp.y };
 }

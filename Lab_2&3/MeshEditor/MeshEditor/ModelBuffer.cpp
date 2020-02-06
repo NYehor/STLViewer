@@ -23,12 +23,12 @@ const unsigned int& ModelBuffer::getVAO() const
 	return VAO;
 }
 
-std::vector<Vertex>& ModelBuffer::getVertexs()
+const std::vector<Vertex>& ModelBuffer::getVertexs() const
 {
 	return modelVertexs;
 }
 
-const std::vector<Vertex>& ModelBuffer::getVertexs() const
+std::vector<Vertex>& ModelBuffer::getVertexs()
 {
 	return modelVertexs;
 }

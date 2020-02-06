@@ -11,8 +11,8 @@ public:
 	const unsigned int& getVBO() const;
 	const unsigned int& getVAO() const;
 
-	std::vector<Vertex>& getVertexs();
 	const std::vector<Vertex>& getVertexs() const;
+	std::vector<Vertex>& getVertexs();
 
 private:
 	unsigned int VBO;

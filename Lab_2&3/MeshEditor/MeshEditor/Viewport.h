@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Camera.h";
+#include "Camera.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
@@ -38,8 +38,6 @@ public:
 	float calcTargetPlaneWidth() const;
 	float calcTargetPlaneHeight() const;
 	float calcAspectRatio() const;
-
-	glm::vec2 convertToTargetPlane(float cursorX, float cursorY) const;
 
 	Camera& getCamera();
 	const Camera& getCamera() const;

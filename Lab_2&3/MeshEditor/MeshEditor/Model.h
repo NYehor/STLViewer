@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "glad.h"
 #include "GLRenderSystem.h"
 #include "ModelBuffer.h"
@@ -12,14 +13,13 @@ public:
 
 	void setModelMatrix(glm::mat4 matrix);
 	void setColor(glm::vec3 color);
+	void setOctreeVisible(bool use);
 
 	glm::mat4 getModelMatrix() const;
 	glm::vec3 getColor() const;
 
+	float calcDistanceIntersection(const glm::vec3& origin, const glm::vec3& direction);
 	void draw();
-
-	Octree& getOctree();
-	const Octree& getOctree() const;
 
 private:
 	std::shared_ptr<ModelBuffer> modelBuffer;
@@ -28,5 +28,6 @@ private:
 
 	glm::mat4 modelMatrix;
 	glm::vec3 color;
+	bool isOctreeVisible;
 };
 

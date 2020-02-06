@@ -26,6 +26,26 @@ void Scene::addModel(const char* filePath)
     models.push_back(Model(renderSystem, bufferPtr));
 }
 
+//std::pair<bool, std::unique_ptr<Model>> Scene::trySelectModel(const glm::vec3& origin, const glm::vec3& direction)
+//{
+//	int index = -1;
+//	float minDistance = std::numeric_limits<float>::max();
+//	for (size_t i = 0, ilen = models.size(); i < ilen; i++)
+//	{
+//		float distance = models[i].calcDistanceIntersection(origin, direction);
+//		if (minDistance > distance)
+//		{
+//			minDistance = distance;
+//			index = i;
+//		}
+//	}
+//
+//	if (index != -1)
+//		return std::make_pair(true, std::make_unique<Model>( models[index]));
+//
+//	return std::make_pair(false, std::make_unique<Model>(models[0]));
+//}
+
 void Scene::addExistModel(const char* key)
 {
 
@@ -36,7 +56,6 @@ void Scene::draw()
     for (size_t i = 0, ilen = models.size(); i < ilen; i++)
     {
         models[i].draw();
-		models[i].getOctree().draw();
     }
 }
 

@@ -1,4 +1,4 @@
-#include "GLRenderSystem.h";
+#include "GLRenderSystem.h"
 #include <string>
 #include "Model.h"
 

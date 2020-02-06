@@ -1,4 +1,6 @@
 #pragma once
+
+#include <memory>
 #include <vector>
 #include <map>
 #include "Model.h"
@@ -12,6 +14,7 @@ public:
 
 	void addModel(const char* filePath);
 	void addExistModel(const char* key);
+	//std::pair<bool, std::unique_ptr<Model>> trySelectModel(const glm::vec3& origin, const glm::vec3& direction);
 	void draw();
 
 private:

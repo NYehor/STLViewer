@@ -46,8 +46,9 @@ void Model::draw()
 
 float Model::calcDistanceIntersection(const glm::vec3& origin, const glm::vec3& direction)
 {
-	glm::vec3 orig = glm::vec3(modelMatrix * glm::vec4(origin, 0));
-	glm::vec3 dir = glm::vec3(modelMatrix * glm::vec4(direction, 0));
+	glm::mat4 matrix = glm::inverse(modelMatrix);
+	glm::vec3 orig = glm::vec3(matrix * glm::vec4(origin, 1));
+	glm::vec3 dir = glm::vec3(matrix * glm::vec4(direction, 0));
 
 	return octree.calcDistanceIntersection(orig, dir);
 }

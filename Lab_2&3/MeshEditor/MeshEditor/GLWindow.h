@@ -16,6 +16,7 @@ enum class Modifier : int
 
 enum class Action : int
 {
+	NoAction = -1,
 	Release = 0,
 	Press = 1,
 	Reapeat = 2,
@@ -85,6 +86,8 @@ enum class KeyCode : int
 	F7 = 296,
 	F8 = 297,
 	F9 = 298,
+	F10= 299,
+	F11= 300
 };
 
 

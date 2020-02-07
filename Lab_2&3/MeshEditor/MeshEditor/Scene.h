@@ -12,9 +12,8 @@ public:
 	Scene(GLRenderSystem& renderSystem);
 	std::vector<std::string> getListOfExistModel();
 
-	void addModel(const char* filePath);
-	void addExistModel(const char* key);
-	//std::pair<bool, std::unique_ptr<Model>> trySelectModel(const glm::vec3& origin, const glm::vec3& direction);
+	void addModel(const char* filePath, glm::vec3 position);
+	Model& trySelectModel(bool& isValid, const glm::vec3& origin, const glm::vec3& direction);
 	void draw();
 
 private:

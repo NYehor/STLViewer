@@ -17,19 +17,21 @@ int main()
 
 	GLWindow window("myWindow", width, height);
 
+	GLRenderSystem renderSystem("VertexShader.glsl", "FragmentShader.glsl");
+	renderSystem.init();
+	renderSystem.setupLight(0, glm::vec3{ -5,0,0 }, glm::vec3{ 0.5,  0.5, 0.5 }, 
+								glm::vec3{ 0.6,0.6,0.6 }, glm::vec3{ 0.5, 0.5,0.5 });
+	renderSystem.turnLight(0, true);
+
 	Viewport viewport;
 	viewport.setViewportSize(width, height);
 	viewport.setFOV(60.f);
 	viewport.setZNear(0.01f);
 	viewport.setZFar(500.f);
 
-	GLRenderSystem renderSystem("VertexShader.glsl", "FragmentShader.glsl");
-	renderSystem.init();
-	renderSystem.setupLight(0, glm::vec3{ -5,0,0 }, glm::vec3{ 0.5,  0.5, 0.5 }, glm::vec3{ 0.6,0.6,0.6 }, glm::vec3{ 0.5, 0.5,0.5 });
-	renderSystem.turnLight(0, true);
-
 	Scene scene(renderSystem);
-	scene.addModel("teapot.stl");
+	scene.addModel("teapot.stl", {0.5,0,0});
+	scene.addModel("teapot.stl", {0,0.5,0});
 
 	Callbacks callbacks(viewport, scene, window);
 

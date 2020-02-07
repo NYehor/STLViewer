@@ -13,42 +13,54 @@ std::vector<std::string> Scene::getListOfExistModel()
     return retval;
 }
 
-void Scene::addModel(const char* filePath)
+void Scene::addModel(const char* filePath, glm::vec3 position)
 {
     STLParser parser;
     std::string name = parser.getName(filePath);
+
+	auto itr = dataModelReferences.find(name);
+	if (itr != dataModelReferences.end() && itr->first == name)
+	{
+		models.push_back(Model(renderSystem, itr->second));
+		glm::mat4 matrix = glm::translate(glm::mat4(1.f), position);
+		models.back().setModelMatrix(matrix);
+		
+		return;
+	}
 
 	auto arr = parser.read(filePath);
 	normolizeModel(arr);
 	translateToCenterOfMass(arr);
 	std::shared_ptr<ModelBuffer> bufferPtr(new ModelBuffer(renderSystem, arr));
 	dataModelReferences.insert(std::pair<std::string, std::shared_ptr<ModelBuffer>>(name, bufferPtr));
+
     models.push_back(Model(renderSystem, bufferPtr));
+	glm::mat4 matrix = glm::translate(glm::mat4(1.f), position);
+	models.back().setModelMatrix(matrix);
 }
 
-//std::pair<bool, std::unique_ptr<Model>> Scene::trySelectModel(const glm::vec3& origin, const glm::vec3& direction)
-//{
-//	int index = -1;
-//	float minDistance = std::numeric_limits<float>::max();
-//	for (size_t i = 0, ilen = models.size(); i < ilen; i++)
-//	{
-//		float distance = models[i].calcDistanceIntersection(origin, direction);
-//		if (minDistance > distance)
-//		{
-//			minDistance = distance;
-//			index = i;
-//		}
-//	}
-//
-//	if (index != -1)
-//		return std::make_pair(true, std::make_unique<Model>( models[index]));
-//
-//	return std::make_pair(false, std::make_unique<Model>(models[0]));
-//}
-
-void Scene::addExistModel(const char* key)
+Model& Scene::trySelectModel(bool& isValid, const glm::vec3& origin, const glm::vec3& direction)
 {
+	int index = -1;
+	float minDistance = std::numeric_limits<float>::max();
+	for (size_t i = 0, ilen = models.size(); i < ilen; i++)
+	{
+		float distance = models[i].calcDistanceIntersection(origin, direction);
+		if (minDistance > distance)
+		{
+			minDistance = distance;
+			index = i;
+		}
+	}
 
+	if (index != -1)
+	{
+		isValid = true;
+		return models[index];
+	}
+
+	isValid = false;
+	return models[0];
 }
 
 void Scene::draw()

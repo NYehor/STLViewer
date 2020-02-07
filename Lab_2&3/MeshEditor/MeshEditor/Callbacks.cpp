@@ -15,21 +15,24 @@ void Callbacks::moveCamera(Camera& camera, glm::vec3 offset)
 	camera.translate(offset * 0.5f);
 }
 
-void Callbacks::moveCube(glm::vec3 offset)
+void Callbacks::moveModel(glm::vec3 offset)
 {
-
+	if (selectedModel == nullptr) return;
+	
+	glm::mat4 matrix = selectedModel->getModelMatrix();
+	selectedModel->setModelMatrix(glm::translate(matrix, offset * 0.5f));
 }
 
 void Callbacks::onKeyCallback(KeyCode key, Action action, Modifier mods)
 {
 	if (key == KeyCode::UP && Action::Press == action)
-		moveCube(glm::vec3{ 0, 1, 0 });
+		moveModel(glm::vec3{ 0, 1, 0 });
 	if (key == KeyCode::DOWN && Action::Press == action)
-		moveCube(glm::vec3{ 0, -1, 0 });
+		moveModel(glm::vec3{ 0, -1, 0 });
 	if (key == KeyCode::LEFT && Action::Press == action)
-		moveCube(glm::vec3{ -1, 0, 0 });
+		moveModel(glm::vec3{ -1, 0, 0 });
 	if (key == KeyCode::RIGHT && Action::Press == action)
-		moveCube(glm::vec3{ 1, 0, 0 });
+		moveModel(glm::vec3{ 1, 0, 0 });
 
 	if (key == KeyCode::W && Action::Press == action)
 		moveCamera(viewport.getCamera(), glm::vec3{ 0, 1, 0 });
@@ -59,15 +62,28 @@ void Callbacks::onKeyCallback(KeyCode key, Action action, Modifier mods)
 		viewport.setParallelProjection(true);
 	if (key == KeyCode::F9 && Action::Press == action)
 		viewport.setParallelProjection(false);
-}
 
-float lastMX = 0, lastMY = 0, curMX = 0, curMY = 0;
-bool arcballOn = false;
+	if (key == KeyCode::F10 && Action::Press == action)
+	{
+		if (selectedModel != nullptr) 
+			selectedModel->setOctreeVisible(true);
+	}
+
+	if (key == KeyCode::F11 && Action::Press == action)
+	{
+		if (selectedModel != nullptr) 
+			selectedModel->setOctreeVisible(false);
+	}
+}
 
 glm::vec3 Callbacks::getArcballVector(float x, float y)
 {
-	glm::vec3 p = glm::vec3(x / (0.5 * viewport.getWidth()) - 1.f, y / (0.5 * viewport.getHeight()) - 1.f, 0.f);
+	glm::vec3 p = glm::vec3(x / (0.5 * viewport.getWidth()) - 1.f, 
+							y / (0.5 * viewport.getHeight()) - 1.f, 0.f);
 	p.y = -p.y;
+
+	p.x = glm::clamp(p.x, -1.f, 1.f);
+	p.y = glm::clamp(p.y, -1.f, 1.f);
 
 	float length = p.x * p.x + p.y * p.y;
 	if (length >= 1.0f)
@@ -79,36 +95,47 @@ glm::vec3 Callbacks::getArcballVector(float x, float y)
 
 void Callbacks::onMouseInput(ButtonCode button, Action action, Modifier modifier, double x, double y)
 {
-	if (ButtonCode::Button_LEFT == button && Action::Press == action)
+	mouse.setInput(button, action, modifier);
+	mouse.setCurrentPosition((float)x, (float)y);
+	mouse.setLastPosition((float)x, (float)y);
+
+	if (ButtonCode::Button_LEFT == mouse.getButtonCode() &&
+		Action::Press == mouse.getAction() && Modifier::Control == mouse.getModifier())
 	{
-		arcballOn = true;
-		lastMX = curMX = (float)x;
-		lastMY = curMY = (float)y;
+		if(selectedModel != nullptr)
+		{
+			selectedModel->setColor(baseModelColor);
+			selectedModel = nullptr;
+		}
+
+		ray r = viewport.calcCursorRay((float)x, (float)y);
+
+		bool isValid;
+		Model& model = scene.trySelectModel(isValid, r.orig, r.dir);
+
+		if (!isValid) return;
+		
+		selectedModel = &model;
+		baseModelColor = selectedModel->getColor();
+		selectedModel->setColor(glm::vec3(1, 0, 0));
 	}
-	else
-	{
-		arcballOn = false;
-	}
-	auto r = viewport.calcCursorRay(lastMX, lastMY);
 }
 
 void Callbacks::onMouseMove(double x, double y)
 {
-	if (arcballOn)
+	mouse.setCurrentPosition((float)x, (float)y);
+
+	if (ButtonCode::Button_LEFT == mouse.getButtonCode() && Action::Press == mouse.getAction())
 	{
-		curMX = (float)x;
-		curMY = (float)y;
+		if (mouse.getCurrentPosition() == mouse.getLastPosition()) return;
+		
+		glm::vec3 a = getArcballVector(mouse.getLastPosition().x, mouse.getLastPosition().y);
+		glm::vec3 b = getArcballVector(mouse.getCurrentPosition().x, mouse.getCurrentPosition().y);
 
-		if (curMX != lastMX || curMY != lastMY)
-		{
-			auto a = getArcballVector((float)lastMX, (float)lastMY);
-			auto b = getArcballVector((float)curMX, (float)curMY);
-
-			viewport.getCamera().orbit(a, b);
-
-			lastMX = curMX;
-			lastMY = curMY;
-		}
+		viewport.getCamera().orbit(a, b);	
 	}
 
+	if (ButtonCode::Button_RIGHT == mouse.getButtonCode() && Action::Press == mouse.getAction())
+	{
+	}
 }

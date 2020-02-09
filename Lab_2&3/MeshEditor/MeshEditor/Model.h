@@ -22,12 +22,12 @@ public:
 	void draw();
 
 private:
-	std::shared_ptr<ModelBuffer> modelBuffer;
-	GLRenderSystem& renderSystem;
-	Octree octree;
+	std::shared_ptr<ModelBuffer> _modelBuffer;
+	GLRenderSystem& _renderSystem;
+	Octree _octree;
 
-	glm::mat4 modelMatrix;
-	glm::vec3 color;
-	bool isOctreeVisible;
+	glm::mat4 _modelMatrix;
+	glm::vec3 _color;
+	bool _isOctreeVisible;
 };
 

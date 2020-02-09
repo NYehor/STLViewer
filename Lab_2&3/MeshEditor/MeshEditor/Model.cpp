@@ -1,54 +1,54 @@
 #include "Model.h"
 
 Model::Model(GLRenderSystem& rs, const std::shared_ptr<ModelBuffer> buffer):
-	renderSystem(rs),
-	modelBuffer(buffer),
-	modelMatrix(glm::mat4(1.f)),
-	color(glm::vec3(1.f)),
-	octree(rs, buffer->getVertexs())
+	_renderSystem(rs),
+	_modelBuffer(buffer),
+	_modelMatrix(glm::mat4(1.f)),
+	_color(glm::vec3(1.f)),
+	_octree(rs, buffer->getVertexs())
 {
-	isOctreeVisible = false;
+	_isOctreeVisible = false;
 }
 
 void Model::setOctreeVisible(bool use)
 {
-	isOctreeVisible = use;
+	_isOctreeVisible = use;
 }
 
 glm::vec3 Model::getColor() const
 {
-	return color;
+	return _color;
 }
 
 void Model::setModelMatrix(glm::mat4 matrix)
 {
-	modelMatrix = matrix;
+	_modelMatrix = matrix;
 }
 
 void Model::setColor(glm::vec3 color)
 { 
-	this->color = color;
+	this->_color = color;
 }
 
 glm::mat4 Model::getModelMatrix() const
 {
-	return modelMatrix;
+	return _modelMatrix;
 }
 
 void Model::draw()
 {
-	if(isOctreeVisible)
-		octree.draw(modelMatrix);
+	if(_isOctreeVisible)
+		_octree.draw(_modelMatrix);
 
-	renderSystem.setupShader(modelMatrix, color);
-	renderSystem.renderTriangles(modelBuffer->getVAO(), modelBuffer->getVertexs());
+	_renderSystem.setupShader(_modelMatrix, _color);
+	_renderSystem.renderTriangles(_modelBuffer->getVAO(), _modelBuffer->getVertexs());
 }
 
 float Model::calcDistanceIntersection(const glm::vec3& origin, const glm::vec3& direction)
 {
-	glm::mat4 matrix = glm::inverse(modelMatrix);
+	glm::mat4 matrix = glm::inverse(_modelMatrix);
 	glm::vec3 orig = glm::vec3(matrix * glm::vec4(origin, 1));
 	glm::vec3 dir = glm::vec3(matrix * glm::vec4(direction, 0));
 
-	return octree.calcDistanceIntersection(orig, dir);
+	return _octree.calcDistanceIntersection(orig, dir);
 }

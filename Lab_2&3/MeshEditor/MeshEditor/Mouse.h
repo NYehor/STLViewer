@@ -21,10 +21,10 @@ public:
 	ButtonCode getButtonCode();
 
 private:
-	glm::vec2 lastPosition;
-	glm::vec2 currentPosition;
-	Modifier modifier;
-	ButtonCode buttonCode;
-	Action action;
+	glm::vec2 _lastPosition;
+	glm::vec2 _currentPosition;
+	Modifier _modifier;
+	ButtonCode _buttonCode;
+	Action _action;
 };
 

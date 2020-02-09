@@ -1,24 +1,17 @@
 #include "Octree.h"
 #include <glm/gtx/normal.hpp>
 
-Octree::Octree(GLRenderSystem& rs, float width, float height, float length):
-	renderSystem(rs)
-{
-	octant = std::unique_ptr<Octant>(new Octant(glm::vec3(0), width, height, length));
-}
-
 Octree::Octree(GLRenderSystem& rs, const std::vector<Vertex>& vertexs):
 	renderSystem(rs)
 {
-	float width; 
-	float height; 
-	float length;
-	determineDimensions(vertexs, width, height, length);
-	octant = std::unique_ptr<Octant>(new Octant(glm::vec3(0), width, height, length));
+	glm::vec3 topFrontRight;
+	glm::vec3 buttonBackLeft;
+	determineDimensions(vertexs, topFrontRight, buttonBackLeft);
+	octant = std::unique_ptr<Octant>(new Octant(topFrontRight, buttonBackLeft));
 	insert(vertexs);
 }
 
-void Octree::determineDimensions(const std::vector<Vertex>& vertexs, float& width, float& height, float& length)
+void Octree::determineDimensions(const std::vector<Vertex>& vertexs, glm::vec3& topFrontRight, glm::vec3& buttonBackLeft)
 {
 	float maxX = 0;
 	float maxY = 0;
@@ -36,9 +29,8 @@ void Octree::determineDimensions(const std::vector<Vertex>& vertexs, float& widt
 			maxZ = abs(vertexs[i].position.z);
 	}
 
-	height = 2 * maxX;
-	width = 2 * maxY;
-	length = 2 * maxZ;
+	topFrontRight = glm::vec3(maxX, maxY, maxZ);
+	buttonBackLeft = glm::vec3(-maxX, -maxY, -maxZ);
 }
 
 void Octree::insert(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
@@ -52,7 +44,7 @@ void Octree::insert(const std::vector<Vertex>& vertexs)
 		octant->insert(vertexs[i].position, vertexs[i + 1].position, vertexs[i + 2].position);
 }
 
-float Octree::calcDistanceIntersection(glm::vec3 origin, glm::vec3 direction)
+float Octree::calcDistanceIntersection(const glm::vec3& origin, const glm::vec3& direction)
 {
 	return octant->octantIntersection(origin, direction);
 }

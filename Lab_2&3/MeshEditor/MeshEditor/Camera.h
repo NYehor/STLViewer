@@ -36,9 +36,9 @@ public:
 	void setEyeTargetUp(glm::vec3 newEye, glm::vec3 newTarget, glm::vec3 newUp);
 
 private:
-	glm::vec3 eye;
-	glm::vec3 target;
-	glm::vec3 up;
+	glm::vec3 _eye;
+	glm::vec3 _target;
+	glm::vec3 _up;
 };
 
 

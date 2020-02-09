@@ -39,16 +39,18 @@ public:
 	float calcTargetPlaneHeight() const;
 	float calcAspectRatio() const;
 
+	glm::vec3 getArcballVector(float mouseX, float mouseY);
+
 	Camera& getCamera();
 	const Camera& getCamera() const;
 
 private:
-	float zNear;
-	float zFar;
-	float fov;
-	uint32_t width;
-	uint32_t height;
-	bool parallelProjection;
-	Camera camera;
+	float _zNear;
+	float _zFar;
+	float _fov;
+	uint32_t _width;
+	uint32_t _height;
+	bool _parallelProjection;
+	Camera _camera;
 };
 

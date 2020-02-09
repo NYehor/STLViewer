@@ -1,8 +1,8 @@
 #include "Callbacks.h"
 
 Callbacks::Callbacks(Viewport& viewport, Scene& scene, GLWindow& window):
-	viewport(viewport),
-	scene(scene)
+	_viewport(viewport),
+	_scene(scene)
 {
 	using namespace std::placeholders;
 	window.setKeyCallback(std::bind(&Callbacks::onKeyCallback, this, _1, _2, _3));
@@ -17,10 +17,10 @@ void Callbacks::moveCamera(Camera& camera, glm::vec3 offset)
 
 void Callbacks::moveModel(glm::vec3 offset)
 {
-	if (selectedModel == nullptr) return;
+	if (_scene.getSelectedModel() == nullptr) return;
 	
-	glm::mat4 matrix = selectedModel->getModelMatrix();
-	selectedModel->setModelMatrix(glm::translate(matrix, offset * 0.5f));
+	glm::mat4 matrix = _scene.getSelectedModel()->getModelMatrix();
+	_scene.getSelectedModel()->setModelMatrix(glm::translate(matrix, offset * 0.5f));
 }
 
 void Callbacks::onKeyCallback(KeyCode key, Action action, Modifier mods)
@@ -35,107 +35,84 @@ void Callbacks::onKeyCallback(KeyCode key, Action action, Modifier mods)
 		moveModel(glm::vec3{ 1, 0, 0 });
 
 	if (key == KeyCode::W && Action::Press == action)
-		moveCamera(viewport.getCamera(), glm::vec3{ 0, 1, 0 });
+		moveCamera(_viewport.getCamera(), glm::vec3{ 0, 1, 0 });
 	if (key == KeyCode::S && Action::Press == action)
-		moveCamera(viewport.getCamera(), glm::vec3{ 0, -1, 0 });
+		moveCamera(_viewport.getCamera(), glm::vec3{ 0, -1, 0 });
 	if (key == KeyCode::A && Action::Press == action)
-		moveCamera(viewport.getCamera(), glm::vec3{ -1, 0, 0 });
+		moveCamera(_viewport.getCamera(), glm::vec3{ -1, 0, 0 });
 	if (key == KeyCode::D && Action::Press == action)
-		moveCamera(viewport.getCamera(), glm::vec3{ 1, 0, 0 });
+		moveCamera(_viewport.getCamera(), glm::vec3{ 1, 0, 0 });
 
 	if (key == KeyCode::F1 && Action::Press == action)
-		viewport.getCamera().setFrontView();
+		_viewport.getCamera().setFrontView();
 	if (key == KeyCode::F2 && Action::Press == action)
-		viewport.getCamera().setRearView();
+		_viewport.getCamera().setRearView();
 	if (key == KeyCode::F3 && Action::Press == action)
-		viewport.getCamera().setRightView();
+		_viewport.getCamera().setRightView();
 	if (key == KeyCode::F4 && Action::Press == action)
-		viewport.getCamera().setLeftView();
+		_viewport.getCamera().setLeftView();
 	if (key == KeyCode::F5 && Action::Press == action)
-		viewport.getCamera().setTopView();
+		_viewport.getCamera().setTopView();
 	if (key == KeyCode::F6 && Action::Press == action)
-		viewport.getCamera().setBottomView();
+		_viewport.getCamera().setBottomView();
 	if (key == KeyCode::F7 && Action::Press == action)
-		viewport.getCamera().setIsoView();
+		_viewport.getCamera().setIsoView();
 
 	if (key == KeyCode::F8 && Action::Press == action)
-		viewport.setParallelProjection(true);
+		_viewport.setParallelProjection(true);
 	if (key == KeyCode::F9 && Action::Press == action)
-		viewport.setParallelProjection(false);
+		_viewport.setParallelProjection(false);
 
 	if (key == KeyCode::F10 && Action::Press == action)
 	{
-		if (selectedModel != nullptr) 
-			selectedModel->setOctreeVisible(true);
+		if (_scene.getSelectedModel() != nullptr)
+			_scene.getSelectedModel()->setOctreeVisible(true);
 	}
 
 	if (key == KeyCode::F11 && Action::Press == action)
 	{
-		if (selectedModel != nullptr) 
-			selectedModel->setOctreeVisible(false);
+		if (_scene.getSelectedModel() != nullptr)
+			_scene.getSelectedModel()->setOctreeVisible(false);
 	}
-}
-
-glm::vec3 Callbacks::getArcballVector(float x, float y)
-{
-	glm::vec3 p = glm::vec3(x / (0.5 * viewport.getWidth()) - 1.f, 
-							y / (0.5 * viewport.getHeight()) - 1.f, 0.f);
-	p.y = -p.y;
-
-	p.x = glm::clamp(p.x, -1.f, 1.f);
-	p.y = glm::clamp(p.y, -1.f, 1.f);
-
-	float length = p.x * p.x + p.y * p.y;
-	if (length >= 1.0f)
-		p = glm::normalize(p);
-	else
-		p.z = sqrt(1.0f - length);
-	return p;
 }
 
 void Callbacks::onMouseInput(ButtonCode button, Action action, Modifier modifier, double x, double y)
 {
-	mouse.setInput(button, action, modifier);
-	mouse.setCurrentPosition((float)x, (float)y);
-	mouse.setLastPosition((float)x, (float)y);
+	_mouse.setInput(button, action, modifier);
+	_mouse.setCurrentPosition((float)x, (float)y);
+	_mouse.setLastPosition((float)x, (float)y);
 
-	if (ButtonCode::Button_LEFT == mouse.getButtonCode() &&
-		Action::Press == mouse.getAction() && Modifier::Control == mouse.getModifier())
+	if (ButtonCode::Button_LEFT == _mouse.getButtonCode() &&
+		Action::Press == _mouse.getAction() && Modifier::Control == _mouse.getModifier())
 	{
-		if(selectedModel != nullptr)
+		if(_scene.getSelectedModel() != nullptr)
 		{
-			selectedModel->setColor(baseModelColor);
-			selectedModel = nullptr;
+			_scene.getSelectedModel()->setColor(_scene.getBaseModelColor());
+			_scene.setNullptrToSelectedModel();
 		}
 
-		ray r = viewport.calcCursorRay((float)x, (float)y);
-
-		bool isValid;
-		Model& model = scene.trySelectModel(isValid, r.orig, r.dir);
-
-		if (!isValid) return;
+		ray r = _viewport.calcCursorRay((float)x, (float)y);
+		if (!_scene.trySelectModel(r.orig, r.dir)) return;
 		
-		selectedModel = &model;
-		baseModelColor = selectedModel->getColor();
-		selectedModel->setColor(glm::vec3(1, 0, 0));
+		_scene.getSelectedModel()->setColor(glm::vec3(1, 0, 0));
 	}
 }
 
 void Callbacks::onMouseMove(double x, double y)
 {
-	mouse.setCurrentPosition((float)x, (float)y);
+	_mouse.setCurrentPosition((float)x, (float)y);
 
-	if (ButtonCode::Button_LEFT == mouse.getButtonCode() && Action::Press == mouse.getAction())
+	if (ButtonCode::Button_LEFT == _mouse.getButtonCode() && Action::Press == _mouse.getAction())
 	{
-		if (mouse.getCurrentPosition() == mouse.getLastPosition()) return;
+		if (_mouse.getCurrentPosition() == _mouse.getLastPosition()) return;
 		
-		glm::vec3 a = getArcballVector(mouse.getLastPosition().x, mouse.getLastPosition().y);
-		glm::vec3 b = getArcballVector(mouse.getCurrentPosition().x, mouse.getCurrentPosition().y);
+		glm::vec3 a = _viewport.getArcballVector(_mouse.getLastPosition().x, _mouse.getLastPosition().y);
+		glm::vec3 b = _viewport.getArcballVector(_mouse.getCurrentPosition().x, _mouse.getCurrentPosition().y);
 
-		viewport.getCamera().orbit(a, b);	
+		_viewport.getCamera().orbit(a, b);	
 	}
 
-	if (ButtonCode::Button_RIGHT == mouse.getButtonCode() && Action::Press == mouse.getAction())
+	if (ButtonCode::Button_RIGHT == _mouse.getButtonCode() && Action::Press == _mouse.getAction())
 	{
 	}
 }

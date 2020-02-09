@@ -2,12 +2,29 @@
 #include "STLParser.h"
 
 Scene::Scene(GLRenderSystem& renderSystem) :
-    renderSystem(renderSystem) {}
+    _renderSystem(renderSystem),
+	_baseModelColor(1.f),
+	_selectedModel(nullptr) {}
+
+glm::vec3 Scene::getBaseModelColor()
+{
+	return _baseModelColor;
+}
+
+Model* Scene::getSelectedModel()
+{
+	return _selectedModel;
+}
+
+void Scene::setNullptrToSelectedModel()
+{
+	_selectedModel = nullptr;
+}
 
 std::vector<std::string> Scene::getListOfExistModel()
 {
     std::vector<std::string> retval;
-    for (auto const& element : dataModelReferences) {
+    for (auto const& element : _dataModelReferences) {
         retval.push_back(element.first);
     }
     return retval;
@@ -18,12 +35,12 @@ void Scene::addModel(const char* filePath, glm::vec3 position)
     STLParser parser;
     std::string name = parser.getName(filePath);
 
-	auto itr = dataModelReferences.find(name);
-	if (itr != dataModelReferences.end() && itr->first == name)
+	auto itr = _dataModelReferences.find(name);
+	if (itr != _dataModelReferences.end() && itr->first == name)
 	{
-		models.push_back(Model(renderSystem, itr->second));
+		_models.push_back(Model(_renderSystem, itr->second));
 		glm::mat4 matrix = glm::translate(glm::mat4(1.f), position);
-		models.back().setModelMatrix(matrix);
+		_models.back().setModelMatrix(matrix);
 		
 		return;
 	}
@@ -31,21 +48,21 @@ void Scene::addModel(const char* filePath, glm::vec3 position)
 	auto arr = parser.read(filePath);
 	normolizeModel(arr);
 	translateToCenterOfMass(arr);
-	std::shared_ptr<ModelBuffer> bufferPtr(new ModelBuffer(renderSystem, arr));
-	dataModelReferences.insert(std::pair<std::string, std::shared_ptr<ModelBuffer>>(name, bufferPtr));
+	std::shared_ptr<ModelBuffer> bufferPtr(new ModelBuffer(_renderSystem, arr));
+	_dataModelReferences.insert(std::pair<std::string, std::shared_ptr<ModelBuffer>>(name, bufferPtr));
 
-    models.push_back(Model(renderSystem, bufferPtr));
+    _models.push_back(Model(_renderSystem, bufferPtr));
 	glm::mat4 matrix = glm::translate(glm::mat4(1.f), position);
-	models.back().setModelMatrix(matrix);
+	_models.back().setModelMatrix(matrix);
 }
 
-Model& Scene::trySelectModel(bool& isValid, const glm::vec3& origin, const glm::vec3& direction)
+bool Scene::trySelectModel(const glm::vec3& origin, const glm::vec3& direction)
 {
 	int index = -1;
 	float minDistance = std::numeric_limits<float>::max();
-	for (size_t i = 0, ilen = models.size(); i < ilen; i++)
+	for (size_t i = 0, ilen = _models.size(); i < ilen; i++)
 	{
-		float distance = models[i].calcDistanceIntersection(origin, direction);
+		float distance = _models[i].calcDistanceIntersection(origin, direction);
 		if (minDistance > distance)
 		{
 			minDistance = distance;
@@ -55,19 +72,19 @@ Model& Scene::trySelectModel(bool& isValid, const glm::vec3& origin, const glm::
 
 	if (index != -1)
 	{
-		isValid = true;
-		return models[index];
+
+		_selectedModel = &_models[index];
+		return true;
 	}
 
-	isValid = false;
-	return models[0];
+	return false;
 }
 
 void Scene::draw()
 {
-    for (size_t i = 0, ilen = models.size(); i < ilen; i++)
+    for (size_t i = 0, ilen = _models.size(); i < ilen; i++)
     {
-        models[i].draw();
+        _models[i].draw();
     }
 }
 

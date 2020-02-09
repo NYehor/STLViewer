@@ -10,11 +10,6 @@ size_t height = 680;
 
 int main()
 {
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
 	GLWindow window("myWindow", width, height);
 
 	GLRenderSystem renderSystem("VertexShader.glsl", "FragmentShader.glsl");
@@ -30,8 +25,7 @@ int main()
 	viewport.setZFar(500.f);
 
 	Scene scene(renderSystem);
-	scene.addModel("teapot.stl", {0.5,0,0});
-	scene.addModel("teapot.stl", {0,0.5,0});
+	scene.addModel("teapot.stl", {0,0,0});
 
 	Callbacks callbacks(viewport, scene, window);
 

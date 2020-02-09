@@ -12,14 +12,21 @@ public:
 	Scene(GLRenderSystem& renderSystem);
 	std::vector<std::string> getListOfExistModel();
 
+	void setNullptrToSelectedModel();
 	void addModel(const char* filePath, glm::vec3 position);
-	Model& trySelectModel(bool& isValid, const glm::vec3& origin, const glm::vec3& direction);
 	void draw();
 
+	Model* getSelectedModel();
+	glm::vec3 getBaseModelColor();
+	bool trySelectModel(const glm::vec3& origin, const glm::vec3& direction);
+
 private:
-	GLRenderSystem& renderSystem;
-	std::vector<Model> models;
-	std::map<std::string, std::shared_ptr<ModelBuffer>> dataModelReferences;
+	glm::vec3 _baseModelColor;
+	Model* _selectedModel;
+
+	GLRenderSystem& _renderSystem;
+	std::vector<Model> _models;
+	std::map<std::string, std::shared_ptr<ModelBuffer>> _dataModelReferences;
 
 	void normolizeModel(std::vector<Vertex>& vertexs);
 	void translateToCenterOfMass(std::vector<Vertex>& vertexs);

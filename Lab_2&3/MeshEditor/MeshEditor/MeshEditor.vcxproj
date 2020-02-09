@@ -23,7 +23,7 @@
     <ProjectGuid>{236F5426-37ED-415C-9B8C-34020460EBB0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MeshEditor</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

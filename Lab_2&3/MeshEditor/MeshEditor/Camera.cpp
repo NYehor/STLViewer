@@ -7,6 +7,11 @@ Camera::Camera()
 	_up = glm::vec3(0, 1, 0);
 }
 
+const glm::vec3& Camera::getUp() const
+{
+	return _up;
+}
+
 glm::mat4 Camera::calcViewMatrix() const
 {
 	return glm::lookAt(_eye, _target, _up);

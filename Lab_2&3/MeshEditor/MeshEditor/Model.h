@@ -11,8 +11,8 @@ class Model
 public:
 	Model(GLRenderSystem& rs, const std::shared_ptr<ModelBuffer> buffer);
 
-	void setModelMatrix(glm::mat4 matrix);
-	void setColor(glm::vec3 color);
+	void setModelMatrix(const glm::mat4& matrix);
+	void setColor(const glm::vec3& color);
 	void setOctreeVisible(bool use);
 
 	glm::mat4 getModelMatrix() const;

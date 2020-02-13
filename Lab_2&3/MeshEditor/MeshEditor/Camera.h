@@ -14,8 +14,10 @@ public:
 	glm::vec3 caclcForward() const;
 	glm::vec3 calcRight() const;
 	float distanceFromEyeToTarget() const;
+
 	const glm::vec3& getEye() const;
 	const glm::vec3& getTarget() const;
+	const glm::vec3& getUp() const;
 
 	void setFrontView();
 	void setTopView();

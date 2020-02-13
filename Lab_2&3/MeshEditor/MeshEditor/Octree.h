@@ -12,7 +12,7 @@ class Octree
 public:
 	Octree(GLRenderSystem& rs, const std::vector<Vertex>& vertexs);
 
-	void insert(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c);
+	void insert(const Vertex& a, const Vertex& b, const Vertex& c);
 	float calcDistanceIntersection(const glm::vec3& origin, const glm::vec3& direction);
 	void draw(const glm::mat4& modelMatrix);
 

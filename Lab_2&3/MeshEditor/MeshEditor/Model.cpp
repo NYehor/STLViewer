@@ -20,12 +20,12 @@ glm::vec3 Model::getColor() const
 	return _color;
 }
 
-void Model::setModelMatrix(glm::mat4 matrix)
+void Model::setModelMatrix(const glm::mat4& matrix)
 {
 	_modelMatrix = matrix;
 }
 
-void Model::setColor(glm::vec3 color)
+void Model::setColor(const glm::vec3& color)
 { 
 	this->_color = color;
 }

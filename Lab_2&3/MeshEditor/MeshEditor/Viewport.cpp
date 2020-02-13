@@ -81,12 +81,12 @@ ray Viewport::calcCursorRay(float x, float y) const
 {
 	glm::vec4 viewport(0.0f, 0.0f, _width, _height);
 	glm::mat4 projection = calcProjectionMatrix();
-	glm::mat4 model = _camera.calcViewMatrix();
-	
-	glm::vec3 a = glm::unProject({ x, _height - y, 0.f }, model, projection, viewport);
-	glm::vec3 b = glm::unProject({ x, _height - y, 1.f }, model, projection, viewport);
+	glm::mat4 view = _camera.calcViewMatrix();
 
-	return ray(a , glm::normalize(b - a));
+	glm::vec3 a = glm::unProject({ x, _height - y, 0.f }, view, projection, viewport);
+	glm::vec3 b = glm::unProject({ x, _height - y, 1.f }, view, projection, viewport);
+
+	return ray(a, glm::normalize(b - a));
 }
 
 float Viewport::calcTargetPlaneWidth() const
@@ -114,10 +114,10 @@ const Camera& Viewport::getCamera() const
 	return _camera;
 }
 
-glm::vec3 Viewport::getArcballVector(float mouseX, float mouseY)
+glm::vec3 Viewport::getArcballVector(float x, float y)
 {
-	float mx = mouseX / (0.5 * (float)_width) - 1.f;
-	float my = -(mouseY / (0.5 * (float)_height) - 1.f);
+	float mx = x / (0.5 * (float)_width) - 1.f;
+	float my = -(y / (0.5 * (float)_height) - 1.f);
 
 	float tetha = sqrtf(mx * mx + my * my);
 	float phi = atan2f(my, mx);
@@ -128,4 +128,14 @@ glm::vec3 Viewport::getArcballVector(float mouseX, float mouseY)
 	vec.z = cosf(tetha);
 
 	return vec;
+}
+
+glm::vec3 Viewport::getPannedPoint(float x, float y)
+{
+	glm::vec4 viewport(0.0f, 0.0f, _width, _height);
+	glm::mat4 projection = calcProjectionMatrix();
+	glm::mat4 view = _camera.calcViewMatrix();
+	float d = _camera.distanceFromEyeToTarget();
+
+	return glm::unProject({ x, _height - y, d }, view, projection, viewport);
 }

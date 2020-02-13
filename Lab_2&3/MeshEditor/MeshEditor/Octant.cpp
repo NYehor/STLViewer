@@ -5,15 +5,15 @@ Octant::Octant(const glm::vec3& topFrontRight, const glm::vec3& buttonBackLeft):
 	_topFrontRight(topFrontRight),
 	_buttonBackLeft(buttonBackLeft)
 {
-
+	_edges = generateBorders();
 }
 
-void Octant::insert(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
+void Octant::insert(const Vertex& a, const Vertex& b, const Vertex& c)
 {
 	Triangle triangle(a, b, c);
-	Triangle xoy(_center + glm::vec3(1, 0, 0), _center, _center + glm::vec3(0, 1, 0));
-	Triangle xoz(_center + glm::vec3(1, 0, 0), _center, _center + glm::vec3(0, 0, 1));
-	Triangle yoz(_center + glm::vec3(0, 1, 0), _center, _center + glm::vec3(0, 0, 1));
+	Triangle xoy({ _center + glm::vec3(1, 0, 0), glm::vec3(0) }, { _center, glm::vec3(0) }, { _center + glm::vec3(0, 1, 0), glm::vec3(0) });
+	Triangle xoz({ _center + glm::vec3(1, 0, 0), glm::vec3(0) }, { _center, glm::vec3(0) }, { _center + glm::vec3(0, 0, 1), glm::vec3(0) });
+	Triangle yoz({ _center + glm::vec3(0, 1, 0), glm::vec3(0) }, { _center, glm::vec3(0) }, { _center + glm::vec3(0, 0, 1), glm::vec3(0) });
 
 	if (isCrossesPlane(xoy, triangle) || isCrossesPlane(xoz, triangle) || isCrossesPlane(yoz, triangle))
 	{
@@ -56,8 +56,8 @@ char Octant::determineChild(glm::vec3 point)
 
 bool Octant::isCrossesPlane(const Triangle& plane, const Triangle& triangle)
 {
-	if (isCrossesPlane(plane, triangle.a, triangle.b) ||
-		isCrossesPlane(plane, triangle.b, triangle.c))
+	if (isCrossesPlane(plane, triangle.a.position, triangle.b.position) ||
+		isCrossesPlane(plane, triangle.b.position, triangle.c.position))
 		return true;
 	else
 		return false;
@@ -65,8 +65,8 @@ bool Octant::isCrossesPlane(const Triangle& plane, const Triangle& triangle)
 
 bool Octant::isCrossesPlane(const Triangle& plane, const glm::vec3& a, const glm::vec3& b)
 {
-	glm::vec3 normal = glm::triangleNormal(plane.a, plane.b, plane.c);
-	glm::vec3 v = plane.a - a;
+	glm::vec3 normal = glm::triangleNormal(plane.a.position, plane.b.position, plane.c.position);
+	glm::vec3 v = plane.a.position - a;
 	float d = glm::dot(normal, v);
 	glm::vec3 ab = b - a;
 	float e = dot(normal, ab);
@@ -86,7 +86,7 @@ bool Octant::isCrossesPlane(const Triangle& plane, const glm::vec3& a, const glm
 
 std::vector<glm::vec3> Octant::getBorders()
 {
-	std::vector<glm::vec3> octantBorders = generateBorders();
+	std::vector<glm::vec3> octantBorders = _edges;
 	
 	for (size_t i = 0; i < 8; i++)
 	{
@@ -99,10 +99,32 @@ std::vector<glm::vec3> Octant::getBorders()
 	return octantBorders;
 }
 
+std::vector<Vertex> Octant::getTriangles()
+{
+	std::vector<Vertex> points;
+
+	for (size_t i = 0, iLen = _triangles.size(); i < iLen; i++)
+	{
+		points.push_back(_triangles[i].a);
+		points.push_back(_triangles[i].b);
+		points.push_back(_triangles[i].c);
+	}
+
+	for (size_t i = 0; i < 8; i++)
+	{
+		if (_children[i] == nullptr) continue;
+
+		std::vector<Vertex> tmp = _children[i]->getTriangles();
+		points.insert(points.end(), tmp.begin(), tmp.end());
+	}
+
+	return points;
+}
+
 float Octant::triangleIntersection(const glm::vec3& origin, const glm::vec3& direction, const Triangle& triangle) // Moller-Trumbore Algorithm
 {
-	glm::vec3 e1 = triangle.b - triangle.a;
-	glm::vec3 e2 = triangle.c - triangle.a;
+	glm::vec3 e1 = triangle.b.position - triangle.a.position;
+	glm::vec3 e2 = triangle.c.position - triangle.a.position;
 	
 	glm::vec3 pvec = glm::cross(direction, e2);
 	float det = dot(e1, pvec);
@@ -111,7 +133,7 @@ float Octant::triangleIntersection(const glm::vec3& origin, const glm::vec3& dir
 		return std::numeric_limits<float>::max();;
 
 	float inv_det = 1 / det;
-	glm::vec3 tvec = origin - triangle.a;
+	glm::vec3 tvec = origin - triangle.a.position;
 	float u = dot(tvec, pvec) * inv_det;
 	if (u < 0 || u > 1) 
 		return std::numeric_limits<float>::max();;
@@ -152,53 +174,30 @@ float Octant::octantIntersection(const glm::vec3& origin, const glm::vec3& direc
 
 bool Octant::boxIntersection(const glm::vec3& origin, const glm::vec3& direction)
 {
-	float txmin = (_buttonBackLeft.x - origin.x) / direction.x;
-	float txmax = (_topFrontRight.x - origin.x) / direction.x;
+	glm::vec3 tmin = (_buttonBackLeft - origin) / direction;
+	glm::vec3 tmax = (_topFrontRight - origin) / direction;
 
-	if (txmin > txmax)
+	for (size_t i = 0; i < 3; i++)
 	{
-		float tmp = txmin;
-		txmin = txmax;
-		txmax = tmp;
+		if (tmin[i] > tmax[i])
+		{
+			float tmp = tmin[i];
+			tmin[i] = tmax[i];
+			tmax[i] = tmp;
+		}
 	}
 
-	float tymin = (_buttonBackLeft.y - origin.y) / direction.y;
-	float tymax = (_topFrontRight.y - origin.y) / direction.y;
-
-	if (tymin > tymax)
-	{
-		float tmp = tymin;
-		tymin = tymax;
-		tymax = tmp;
-	}
-
-	if ((txmin > tymax) || (tymin > txmax))
+	if ((tmin.x > tmax.y) || (tmin.y > tmax.x))
 		return false;
 
-	if (tymin > txmin)
-		txmin = tymin;
+	if (tmin.y > tmin.x)
+		tmin.x = tmin.y;
 
-	if (tymax < txmax)
-		txmax = tymax;
+	if (tmax.y < tmax.x)
+		tmax.x = tmax.y;
 
-	float tzmin = (_buttonBackLeft.z - origin.z) / direction.z;
-	float tzmax = (_topFrontRight.z- origin.z) / direction.z;
-
-	if (tzmin > tzmax)
-	{
-		float tmp = tzmin;
-		tzmin = tzmax;
-		tzmax = tmp;
-	}
-
-	if ((txmin > tzmax) || (tzmin > txmax))
+	if ((tmin.x > tmax.z) || (tmin.z > tmax.x))
 		return false;
-
-	if (tzmin > txmin)
-		txmin = tzmin;
-
-	if (tzmax < txmax)
-		txmax = tzmax;
 
 	return true;
 }

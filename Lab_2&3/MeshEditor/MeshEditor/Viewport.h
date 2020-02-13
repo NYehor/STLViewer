@@ -39,7 +39,8 @@ public:
 	float calcTargetPlaneHeight() const;
 	float calcAspectRatio() const;
 
-	glm::vec3 getArcballVector(float mouseX, float mouseY);
+	glm::vec3 getArcballVector(float x, float y);
+	glm::vec3 getPannedPoint(float x, float y);
 
 	Camera& getCamera();
 	const Camera& getCamera() const;

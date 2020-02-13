@@ -33,7 +33,7 @@ void Octree::determineDimensions(const std::vector<Vertex>& vertexs, glm::vec3& 
 	buttonBackLeft = glm::vec3(-maxX, -maxY, -maxZ);
 }
 
-void Octree::insert(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
+void Octree::insert(const Vertex& a, const Vertex& b, const Vertex& c)
 {
 	octant->insert(a, b, c);
 }
@@ -41,7 +41,7 @@ void Octree::insert(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
 void Octree::insert(const std::vector<Vertex>& vertexs)
 {
 	for (size_t i = 0, iLen = vertexs.size(); i < iLen; i += 3)
-		octant->insert(vertexs[i].position, vertexs[i + 1].position, vertexs[i + 2].position);
+		octant->insert(vertexs[i], vertexs[i + 1], vertexs[i + 2]);
 }
 
 float Octree::calcDistanceIntersection(const glm::vec3& origin, const glm::vec3& direction)

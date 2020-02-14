@@ -20,6 +20,11 @@ glm::vec3 Model::getColor() const
 	return _color;
 }
 
+Octree& Model::getOctree()
+{
+	return _octree;
+}
+
 void Model::setModelMatrix(const glm::mat4& matrix)
 {
 	_modelMatrix = matrix;

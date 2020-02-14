@@ -17,6 +17,7 @@ public:
 
 	glm::mat4 getModelMatrix() const;
 	glm::vec3 getColor() const;
+	Octree& getOctree();
 
 	float calcDistanceIntersection(const glm::vec3& origin, const glm::vec3& direction);
 	void draw();

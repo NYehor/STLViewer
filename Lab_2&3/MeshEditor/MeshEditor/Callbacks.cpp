@@ -74,6 +74,16 @@ void Callbacks::onKeyCallback(KeyCode key, Action action, Modifier mods)
 		if (_scene.getSelectedModel() != nullptr)
 			_scene.getSelectedModel()->setOctreeVisible(false);
 	}
+
+	if (key == KeyCode::C && Action::Press == action && Modifier::Control == mods)
+	{
+		if (_scene.getSelectedModel() == nullptr) return;
+
+		glm::vec3 a = _viewport.getCamera().getUp();
+		glm::vec3 b = _viewport.getCamera().getEye();
+		glm::vec3 c = _viewport.getCamera().getTarget();
+		_scene.splitSelectedModel(a, b, c);
+	}
 }
 
 void Callbacks::onMouseInput(ButtonCode button, Action action, Modifier modifier, double x, double y)

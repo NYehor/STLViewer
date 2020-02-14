@@ -149,7 +149,7 @@ float Octant::triangleIntersection(const glm::vec3& origin, const glm::vec3& dir
 
 float Octant::octantIntersection(const glm::vec3& origin, const glm::vec3& direction) 
 {
-	if (!boxIntersection(origin, direction))
+	if (!isBoxIntersection(origin, direction))
 		return std::numeric_limits<float>::max();
 	
 	float distance = std::numeric_limits<float>::max();;
@@ -172,7 +172,7 @@ float Octant::octantIntersection(const glm::vec3& origin, const glm::vec3& direc
 	return distance;
 }
 
-bool Octant::boxIntersection(const glm::vec3& origin, const glm::vec3& direction)
+bool Octant::isBoxIntersection(const glm::vec3& origin, const glm::vec3& direction)
 {
 	glm::vec3 tmin = (_buttonBackLeft - origin) / direction;
 	glm::vec3 tmax = (_topFrontRight - origin) / direction;
@@ -240,4 +240,105 @@ std::vector<glm::vec3> Octant::generateBorders()
 		vertexs.push_back(v[i]);
 
 	return vertexs;
+}
+
+bool Octant::isBoxIntersection(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
+{
+	bool isIntersected = false;
+	Triangle plane({ a, glm::vec3(0) }, { b, glm::vec3(0) }, { c, glm::vec3(0) });
+
+	for (size_t i = 0, iLen = _edges.size(); i < iLen; i += 2)
+	{
+		if (isCrossesPlane(plane, _edges[i], _edges[i + 1]))
+			return true;
+	}
+
+	return false;
+}
+
+void Octant::split(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, std::vector<Vertex>& firstHalf, std::vector<Vertex>& secondHalf, std::vector<Vertex>& middle)
+{
+	Triangle plane({ a, glm::vec3(0) }, { b, glm::vec3(0) }, { c, glm::vec3(0) });
+
+	if (!isBoxIntersection(a,b,c))
+	{
+		std::vector<Vertex> tmp = getTriangles();
+		if (SplitMethods::isRightPartOfSpace(a, b, c, _center))
+			firstHalf.insert(firstHalf.end(), tmp.begin(), tmp.end());
+		else
+			secondHalf.insert(secondHalf.end(), tmp.begin(), tmp.end());
+	}
+
+	for (size_t i = 0, iLen = _triangles.size(); i < iLen; i++)
+	{
+		if (isCrossesPlane(plane, _triangles[i]))
+		{
+			std::vector<Vertex> right;
+			std::vector<Vertex> left;
+
+			if (SplitMethods::isRightPartOfSpace(a, b, c, _triangles[i].a.position))
+				right.push_back(_triangles[i].a);
+			else
+				left.push_back(_triangles[i].a);
+
+			if (SplitMethods::isRightPartOfSpace(a, b, c, _triangles[i].b.position))
+				right.push_back(_triangles[i].b);
+			else
+				left.push_back(_triangles[i].b);
+
+			if (SplitMethods::isRightPartOfSpace(a, b, c, _triangles[i].c.position))
+				right.push_back(_triangles[i].c);
+			else
+				left.push_back(_triangles[i].c);
+
+			if (right.size() == 2)
+			{
+				for (size_t j = 0; j < 2; j++)
+				{
+					glm::vec3 interPoint = SplitMethods::intersectionPoint(a,b,c, left[0].position, right[j].position);
+					middle.push_back({ interPoint, glm::vec3() });
+					right.push_back({ interPoint, glm::vec3()});
+					left.push_back({ interPoint, glm::vec3() });
+				}
+
+			}
+			if (left.size() == 2)
+			{
+				for (size_t j = 0; j < 2; j++)
+				{
+					glm::vec3 interPoint = SplitMethods::intersectionPoint(a, b, c, right[0].position, left[j].position);
+					middle.push_back({ interPoint, glm::vec3() });
+					right.push_back({ interPoint, glm::vec3() });
+					left.push_back({ interPoint, glm::vec3() });
+				}
+			}
+			std::vector<Vertex> newRight = SplitMethods::triangulation(right, _triangles[i].a.normal);
+			std::vector<Vertex> newLeft = SplitMethods::triangulation(left, _triangles[i].a.normal);
+
+			firstHalf.insert(firstHalf.begin(), newRight.begin(), newRight.end());
+			secondHalf.insert(secondHalf.begin(), newLeft.begin(), newLeft.end());
+		}
+		else
+		{
+			if (SplitMethods::isRightPartOfSpace(a, b, c, _triangles[i].center))
+			{
+				firstHalf.push_back(_triangles[i].a);
+				firstHalf.push_back(_triangles[i].b);
+				firstHalf.push_back(_triangles[i].c);
+			}
+			else
+			{
+				secondHalf.push_back(_triangles[i].a);
+				secondHalf.push_back(_triangles[i].b);
+				secondHalf.push_back(_triangles[i].c);
+			}
+		}
+	}
+
+	for (size_t i = 0; i < 8; i++)
+	{
+		if (_children[i] == nullptr) continue;
+
+		_children[i]->split(a, b, c, firstHalf, secondHalf, middle);
+	}
 }

@@ -133,3 +133,29 @@ void Scene::translateToCenterOfMass(std::vector<Vertex>& vertexs)
 		vertexs[i].normal = glm::vec3(matrix * glm::vec4(vertexs[i].normal, 1));
 	}
 }
+
+void Scene::splitSelectedModel(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
+{
+	std::vector<Vertex> arr1;
+	std::vector<Vertex> arr2;
+
+	_selectedModel->getOctree().split(a, b, c, arr1, arr2);
+	_models.clear(); 
+
+	addModel("split1", arr1);
+	addModel("split2", arr2);
+}
+
+void Scene::addModel(std::string name, const std::vector<Vertex>& vertexs)
+{
+	auto itr = _dataModelReferences.find(name);
+	if (itr != _dataModelReferences.end() && itr->first == name)
+	{
+		_models.push_back(Model(_renderSystem, itr->second));
+		return;
+	}
+
+	std::shared_ptr<ModelBuffer> bufferPtr(new ModelBuffer(_renderSystem, vertexs));
+	_dataModelReferences.insert(std::pair<std::string, std::shared_ptr<ModelBuffer>>(name, bufferPtr));
+	_models.push_back(Model(_renderSystem, bufferPtr));
+}

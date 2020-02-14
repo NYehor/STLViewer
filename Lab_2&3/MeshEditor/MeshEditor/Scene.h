@@ -14,6 +14,8 @@ public:
 
 	void setNullptrToSelectedModel();
 	void addModel(const char* filePath, glm::vec3 position);
+	void addModel(std::string name, const std::vector<Vertex>& vertexs);
+	void splitSelectedModel(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c);
 	void draw();
 
 	Model* getSelectedModel();

@@ -6,6 +6,7 @@
 #include <memory>
 #include "Octant.h"
 #include "ModelBuffer.h"
+#include "SplitMethods.h";
 
 class Octree
 {
@@ -13,6 +14,8 @@ public:
 	Octree(GLRenderSystem& rs, const std::vector<Vertex>& vertexs);
 
 	void insert(const Vertex& a, const Vertex& b, const Vertex& c);
+	void split(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c,
+					std::vector<Vertex>& firstHalf, std::vector<Vertex>& secondHalf);
 	float calcDistanceIntersection(const glm::vec3& origin, const glm::vec3& direction);
 	void draw(const glm::mat4& modelMatrix);
 

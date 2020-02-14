@@ -64,3 +64,15 @@ void Octree::draw(const glm::mat4& modelMatrix)
 	renderSystem.setupShader(modelMatrix, glm::vec3(1.f));
 	renderSystem.renderLines(buffer->getVAO(), buffer->getVertexs());
 }
+
+void Octree::split(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, std::vector<Vertex>& firstHalf, std::vector<Vertex>& secondHalf)
+{
+	std::vector<Vertex> middle;
+	octant->split(a,b,c, firstHalf, secondHalf, middle);
+
+	std::vector<Vertex> tmp1 = SplitMethods::triangulation(middle, -glm::triangleNormal(a,b,c));
+	firstHalf.insert(firstHalf.end(), tmp1.begin(), tmp1.end());
+
+	std::vector<Vertex> tmp2 = SplitMethods::triangulation(middle, glm::triangleNormal(a, b, c));
+	secondHalf.insert(secondHalf.end(), tmp2.begin(), tmp2.end());
+}

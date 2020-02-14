@@ -7,6 +7,7 @@
 #include <array>
 #include <memory>
 #include "GLRenderSystem.h"
+#include "SplitMethods.h"
 
 class Octant
 {
@@ -14,7 +15,8 @@ public:
 	Octant(const glm::vec3& topFrontRight, const glm::vec3& buttonBackLeft);
 
 	void insert(const Vertex& a, const Vertex& b, const Vertex& c);
-
+	void split(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c,
+				std::vector<Vertex>& firstHalf, std::vector<Vertex>& secondHalf, std::vector<Vertex>& middle);
 	std::vector<Vertex> getTriangles();
 	std::vector<glm::vec3> getBorders();
 	float octantIntersection(const glm::vec3& origin, const glm::vec3& direction);
@@ -46,7 +48,8 @@ private:
 	std::vector<glm::vec3> generateBorders();
 	bool isCrossesPlane(const Triangle& plane, const Triangle& triangle);
 	bool isCrossesPlane(const Triangle& plane, const glm::vec3& a, const glm::vec3& b);
-	bool boxIntersection(const glm::vec3& origin, const glm::vec3& direction);
+	bool isBoxIntersection(const glm::vec3& origin, const glm::vec3& direction);
+	bool isBoxIntersection(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c);
 	float triangleIntersection(const glm::vec3& origin, const glm::vec3& direction, const Triangle& triangle);
 };
 

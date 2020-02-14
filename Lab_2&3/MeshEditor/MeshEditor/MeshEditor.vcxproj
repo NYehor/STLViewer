@@ -178,6 +178,7 @@
     <ClCompile Include="Octree.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SplitMethods.cpp" />
     <ClCompile Include="STLParser.cpp" />
     <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
@@ -196,6 +197,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SplitMethods.h" />
     <ClInclude Include="STLParser.h" />
     <ClInclude Include="Viewport.h" />
   </ItemGroup>
